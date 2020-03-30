@@ -3,12 +3,12 @@ package Domoserv_Pi.domoserv_android.Common
 import okhttp3.*
 
 open class WebSock {
-    private var ws: OkHttpClient? = OkHttpClient()
+    private var m_ws: OkHttpClient? = OkHttpClient()
 
     fun connect(url: String, port: Int, password: String) {
         val request = Request.Builder().url("ws://$url:$port").build()
         val listener = EchoWebSocketListener(password)
-        val webSock = ws?.newWebSocket(request, listener)
+        val webSock = m_ws?.newWebSocket(request, listener)
         if (webSock != null) {
             while(!listener.isReady()) {}
             println("Connected")
@@ -29,12 +29,12 @@ open class WebSock {
 }
 
 private class EchoWebSocketListener(private val password: String) : WebSocketListener() {
-    private var crypto = CryptoFire()
-    private var ready = false
-    private val name = "Android"
+    private var m_crypto = CryptoFire()
+    private var m_ready = false
+    private val m_name = "Android"
 
     fun isReady(): Boolean {
-        return ready
+        return m_ready
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -42,18 +42,18 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         if (text.split(" ")?.count() == 50) {
-            crypto = CryptoFire(50, 4, text)
-            if (!crypto.Add_Encrypted_Key(name, password)) {
+            m_crypto = CryptoFire(50, 4, text)
+            if (!m_crypto.Add_Encrypted_Key(m_name, password)) {
                 webSocket.close(1000, null)
                 println("Closing socket")
             } else {
-                var data = "OK $name"
-                webSocket.send(crypto.Encrypt_Data(data,name))
-                ready = true
+                var data = "OK $m_name"
+                webSocket.send(m_crypto.Encrypt_Data(data,m_name))
+                m_ready = true
             }
         }
         else {
-            println(crypto.Decrypt_Data(text, name))
+            println(m_crypto.Decrypt_Data(text, m_name))
         }
     }
 

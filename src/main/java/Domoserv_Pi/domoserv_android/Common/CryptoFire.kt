@@ -2,41 +2,41 @@ package Domoserv_Pi.domoserv_android.Common
 
 import kotlin.random.Random
 
-
 //use char key
 //User send public key, server return his public key encrypted in user public key + password
-
-var _key: String = ""
-var _codeSize: Int = 0
-var _EncryptedKeys = mutableListOf("")
 
 //keySize : Défini la taille de la clé de cryptage
 //codeSize : défini la difficulté du cryptage basé sur le mot de passe, celui-ci doit être au minimum de la taille du codeSize
 class CryptoFire(private var keySize: Int, private var codeSize: Int, private var key: String) {
     constructor() : this(50, 4, "")
+
+    var m_key: String = ""
+    var m_codeSize: Int = 0
+    var m_EncryptedKeys = mutableListOf("")
+
     init {
         if (keySize <= 0) keySize = 50
         if (codeSize <= 0) codeSize = 4
-        _codeSize = codeSize
+        m_codeSize = codeSize
         if (key.isEmpty()) Generate_Key(keySize)
-        else _key = key
+        else m_key = key
     }
 
     fun Get_Key(): String {
-        return _key
+        return m_key
     }
 
     //Création d'une nouvelle clé de cryptage ayant pour nom "name" et suivant le mot de passe "password"
 //le "password" doit être >= au codeSize
     fun Add_Encrypted_Key(name: String, password: String): Boolean {
-        for (i in 0 until _EncryptedKeys.count()) {
-            if (_EncryptedKeys[i].contains(name)) {
+        for (i in 0 until m_EncryptedKeys.count()) {
+            if (m_EncryptedKeys[i].contains(name)) {
                 println("Une clé possède déjà ce nom !")
                 return false
             }
         }
-        if (password.count() < _codeSize) {
-            println("Le mot de passe est de taille inférieur à $_codeSize")
+        if (password.count() < m_codeSize) {
+            println("Le mot de passe est de taille inférieur à $m_codeSize")
             return false
         }
         val result: String = Encrypt_Key(password)
@@ -45,15 +45,15 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
             return false
         }
 
-        _EncryptedKeys.add("$name|$result")
+        m_EncryptedKeys.add("$name|$result")
         return true
     }
 
     //Suppression de la clé de cryptage "name"
     fun Remove_Encrypted_Key(name: String): Boolean {
-        for (i in 0 until _EncryptedKeys.count()) {
-            if (_EncryptedKeys[i].contains(name)) {
-                _EncryptedKeys.removeAt(i)
+        for (i in 0 until m_EncryptedKeys.count()) {
+            if (m_EncryptedKeys[i].contains(name)) {
+                m_EncryptedKeys.removeAt(i)
                 return true
             }
         }
@@ -64,9 +64,9 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
     fun Decrypt_Data(data: String, name: String): String {
         //Obtention de la clé de cryptage
         var k = listOf<String>("")
-        for (i in 0 until _EncryptedKeys.count()) {
-            if (_EncryptedKeys[i].split("|").first() == name) {
-                k = _EncryptedKeys[i].split("|").last().split(" ")
+        for (i in 0 until m_EncryptedKeys.count()) {
+            if (m_EncryptedKeys[i].split("|").first() == name) {
+                k = m_EncryptedKeys[i].split("|").last().split(" ")
             }
         }
         if (k.isEmpty()) {
@@ -104,9 +104,9 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
     fun Encrypt_Data(data: String, name: String): String {
         //Obtention de la clé de cryptage
         var k = listOf<String>()
-        for (i in 0 until _EncryptedKeys.count()) {
-            if (_EncryptedKeys[i].split("|").first() == name) {
-                k = _EncryptedKeys[i].split("|").last().split(" ")
+        for (i in 0 until m_EncryptedKeys.count()) {
+            if (m_EncryptedKeys[i].split("|").first() == name) {
+                k = m_EncryptedKeys[i].split("|").last().split(" ")
             }
 
         }
@@ -151,7 +151,7 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
                 key += " "
         }
 
-        _key = key
+        m_key = key
     }
 
     //Génération d'une nouvelle clé suivant le mot de passe et la clé original
@@ -159,13 +159,13 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
     //Clé généré par le client et le serveur
     private fun Encrypt_Key(password: String): String {
         //le mot de passe  doit être minimum de taille identique au "codeSize"
-        if (password.count() < _codeSize) {
+        if (password.count() < m_codeSize) {
             return "Error : WebPassword is too short !"
         }
 
         //Génération du code
-        val code = Array<Int>(_codeSize) { 0 }
-        for (i in 0 until _codeSize) {
+        val code = Array<Int>(m_codeSize) { 0 }
+        for (i in 0 until m_codeSize) {
             code[i] = Character.getNumericValue(password[i]) % 3
         }
 
@@ -173,16 +173,16 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
         var ekey = ""
         var intCode = 0
         var intPassword = 0
-        for (i in 0 until _key.split(" ").count()) {
+        for (i in 0 until m_key.split(" ").count()) {
             var tchar: UInt
             if (code[intCode] == 0) {
-                tchar = _key.split(" ")[i].toUInt() + password[intPassword].toInt().toUInt()
+                tchar = m_key.split(" ")[i].toUInt() + password[intPassword].toInt().toUInt()
             } else if (code[intCode] == 1) {
-                tchar = _key.split(" ")[i].toUInt() - password[intPassword].toInt().toUInt()
+                tchar = m_key.split(" ")[i].toUInt() - password[intPassword].toInt().toUInt()
             } else if (code[intCode] == 2) {
-                tchar = _key.split(" ")[i].toUInt() * password[intPassword].toInt().toUInt()
+                tchar = m_key.split(" ")[i].toUInt() * password[intPassword].toInt().toUInt()
             } else if (code[intCode] == 3) {
-                tchar = _key.split(" ")[i].toUInt() / password[intPassword].toInt().toUInt()
+                tchar = m_key.split(" ")[i].toUInt() / password[intPassword].toInt().toUInt()
             } else {
                 return "EncryptPKEY : Code is corrupted ! key not encrypted !"
             }
@@ -191,12 +191,12 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
             if (tchar > 250u) {
                 tchar = tchar % 250u
             }
-            if(i == _key.split(" ").count()-1)
+            if(i == m_key.split(" ").count()-1)
                 ekey += tchar
             else
                 ekey += "$tchar "
             intCode++
-            if (intCode >= _codeSize) {
+            if (intCode >= m_codeSize) {
                 intCode = 0
             }
             intPassword++;
@@ -205,7 +205,7 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
             }
         }
 
-        if(ekey.split(" ").count() == _key.split(" ").count()) {
+        if(ekey.split(" ").count() == m_key.split(" ").count()) {
             return ekey
         }
         else {

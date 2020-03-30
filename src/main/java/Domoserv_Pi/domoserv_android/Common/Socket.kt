@@ -1,24 +1,23 @@
 package Domoserv_Pi.domoserv_android.Common
 
-import java.io.IOException
 import java.net.InetAddress
 import java.net.Socket
 import java.nio.ByteBuffer
 
 class socket {
-    var serverIP: String = "192.168.1.73"
-    var serverPort: Int = 50000
-    var password = "passwd"
-    var serverAddr = InetAddress.getByName(serverIP)
+    var m_serverIP: String = "192.168.1.73"
+    var m_serverPort: Int = 50000
+    var m_password = "passwd"
+    var m_serverAddr = InetAddress.getByName(m_serverIP)
 
-    var sock = Socket(serverAddr, serverPort)
-    var crypto = CryptoFire()
+    var m_sock = Socket(m_serverAddr, m_serverPort)
+    var m_crypto = CryptoFire()
 
     @ExperimentalStdlibApi
     fun run(): Unit {
         println("Connecting...")
         println(Receipt_Packet())
-        println(sock.isConnected)
+        println(m_sock.isConnected)
     }
 
     private fun To_Packet(value: String): String {
@@ -36,11 +35,11 @@ class socket {
     private fun Receipt_Packet(): String {
         var end = false
         var message= ""
-        var input = sock.getInputStream().bufferedReader(Charsets.UTF_16)
-        var output = sock.getOutputStream().bufferedWriter(Charsets.UTF_16)
+        var input = m_sock.getInputStream().bufferedReader(Charsets.UTF_16)
+        var output = m_sock.getOutputStream().bufferedWriter(Charsets.UTF_16)
 
 
-        if(input.ready() && sock.isConnected) {
+        if(input.ready() && m_sock.isConnected) {
             input.skip(3)
             message = input.readLine()
             message = message.trim()
@@ -49,15 +48,15 @@ class socket {
         println("Message received : $message")
 
         if(message?.split(" ")?.count() == 50) {
-            crypto = CryptoFire(50,4,message.toString())
-            if(!crypto.Add_Encrypted_Key("Admin",password)) {
-                sock.close()
+            m_crypto = CryptoFire(50,4,message.toString())
+            if(!m_crypto.Add_Encrypted_Key("Admin",m_password)) {
+                m_sock.close()
                 println("Closing socket")
                 return "Socket error, bad password ?"
             }
             println("Socket ready")
             var size: UShort = 0u
-            var data = crypto.Encrypt_Data("OKergjeriogjeriogjerzoijgfreoid","Admin")
+            var data = m_crypto.Encrypt_Data("OKergjeriogjeriogjerzoijgfreoid","Admin")
             println(data)
             size = data.count().toUShort()
             var byte = ByteBuffer.allocate(UShort.SIZE_BYTES + data.count())
@@ -82,6 +81,6 @@ class socket {
     }
 
     private fun Send_Packet(packet: String) {
-        sock.outputStream.write(To_Packet(packet).toByteArray())
+        m_sock.outputStream.write(To_Packet(packet).toByteArray())
     }
 }
