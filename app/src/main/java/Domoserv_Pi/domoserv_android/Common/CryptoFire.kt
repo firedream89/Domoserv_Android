@@ -1,5 +1,6 @@
 package Domoserv_Pi.domoserv_android.Common
 
+import Domoserv_Pi.domoserv_android.exceptions.CryptoFireException
 import kotlin.random.Random
 
 //use char key
@@ -17,31 +18,31 @@ class CryptoFire(private var key: String) {
         this.key = if (this.key.isEmpty()) generateKey(keySize) else this.key
     }
 
-    //Création d'une nouvelle clé de cryptage ayant pour nom "name" et suivant le mot de passe "password"
-//le "password" doit être >= au codeSize
+    /**
+     * Création d'une nouvelle clé de cryptage ayant pour nom "name" et suivant le mot de passe "password"
+     *le "password" doit être >= au codeSize
+     */
     @ExperimentalUnsignedTypes
-    fun addEncryptedKey(name: String, password: String): Boolean {
+    fun addEncryptedKey(name: String, password: String) {
         for (i in 0 until this.myEncryptedKeys.count()) {
             if (this.myEncryptedKeys[i].contains(name)) {
-                println("Une clé possède déjà ce nom !")
-                return false
+                throw CryptoFireException(Constants.SAME_KEY_MESSAGE)
             }
         }
         if (password.count() < this.codeSize) {
-            println("Le mot de passe est de taille inférieur à ${this.codeSize}")
-            return false
+            throw CryptoFireException(Constants.PWD_TOO_SHORT_MESSAGE)
         }
         val result: String = encryptKey(password)
         if (result.isEmpty()) {
-            println("Echec de création de la clé !")
-            return false
+            throw CryptoFireException(Constants.FAIL_KEY_CREATION_MESSAGE)
         }
 
         this.myEncryptedKeys.add("$name|$result")
-        return true
     }
 
-    //Suppression de la clé de cryptage "name"
+    /**
+     * Suppression de la clé de cryptage "name"
+     */
     fun removeEncryptedKey(name: String): Boolean {
         for (i in 0 until this.myEncryptedKeys.count()) {
             if (this.myEncryptedKeys[i].contains(name)) {
@@ -52,7 +53,9 @@ class CryptoFire(private var key: String) {
         return false
     }
 
-    //Décryptage des données "data" avec la clé correspondante "name"
+    /**
+     * Décryptage des données "data" avec la clé correspondante "name"
+     */
     fun decryptData(data: String, name: String): String {
         //Obtention de la clé de cryptage
         var k = listOf("")
@@ -62,7 +65,7 @@ class CryptoFire(private var key: String) {
             }
         }
         if (k.isEmpty()) {
-            return "Error key not found"
+            throw CryptoFireException(Constants.KEY_NOT_FOUND_MESSAGE)
         }
 
         //décryptage des données
@@ -94,7 +97,9 @@ class CryptoFire(private var key: String) {
     }
 
 
-    //Cryptage des données "data" avec la clé correspondante "name"
+    /**
+     * Cryptage des données "data" avec la clé correspondante "name"
+     */
     fun encryptData(data: String, name: String): String {
         //Obtention de la clé de cryptage
         var k = listOf<String>()
@@ -105,7 +110,7 @@ class CryptoFire(private var key: String) {
 
         }
         if (k.isEmpty()) {
-            return "Error key not found"
+            throw CryptoFireException(Constants.KEY_NOT_FOUND_MESSAGE)
         }
 
         //cryptage des données
@@ -157,7 +162,7 @@ class CryptoFire(private var key: String) {
     private fun encryptKey(password: String): String {
         //le mot de passe  doit être minimum de taille identique au "codeSize"
         if (password.count() < this.codeSize) {
-            return "Error : WebPassword is too short !"
+            throw CryptoFireException(Constants.PWD_TOO_SHORT_MESSAGE)
         }
 
         //Génération du code
@@ -191,7 +196,7 @@ class CryptoFire(private var key: String) {
                 else -> 0U
             }
 
-            if (tchar == 0U) throw Exception("EncryptPKEY : Code is corrupted ! key not encrypted !")
+            if (tchar == 0U) throw CryptoFireException(Constants.CORRUPTED_CODE_MESSAGE)
 
             //Modification de la valeur si supérieur à 250
             if (tchar > 250u) {
@@ -214,7 +219,7 @@ class CryptoFire(private var key: String) {
         return if (ekey.split(" ").count() == this.key.split(" ").count()) {
             ekey
         } else {
-            "Echec de la génération de la nouvelle clé !"
+            throw CryptoFireException(Constants.FAIL_KEY_CREATION_MESSAGE)
         }
 
     }

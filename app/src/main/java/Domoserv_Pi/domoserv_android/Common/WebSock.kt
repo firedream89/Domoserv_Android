@@ -1,5 +1,6 @@
 package Domoserv_Pi.domoserv_android.Common
 
+import Domoserv_Pi.domoserv_android.exceptions.CryptoFireException
 import okhttp3.*
 
 open class WebSock {
@@ -18,12 +19,12 @@ open class WebSock {
             webSock?.send(data)
         }
 
-        fun Update() {
+        fun update() {
 
         }
 
         fun disconnect() {
-            webSock?.close(1000,null)
+            webSock?.close(1000, null)
         }
     }
 }
@@ -40,20 +41,24 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
     override fun onOpen(webSocket: WebSocket, response: Response) {
     }
 
+    @ExperimentalUnsignedTypes
     override fun onMessage(webSocket: WebSocket, text: String) {
         m_crypto = CryptoFire(text)
-        if (text.split(" ").count() == 50) {
-            if (!m_crypto.addEncryptedKey(m_name, password)) {
-                webSocket.close(1000, null)
-                println("Closing socket")
-            } else {
+        try {
+            if (text.split(" ").count() == 50) {
+                m_crypto.addEncryptedKey(m_name, password)
                 var data = "OK $m_name"
-                webSocket.send(m_crypto.encryptData(data,m_name))
+                webSocket.send(m_crypto.encryptData(data, m_name))
                 m_ready = true
+            } else {
+                println(m_crypto.decryptData(text, m_name))
             }
-        }
-        else {
-            println(m_crypto.decryptData(text, m_name))
+            //TODO Split CryptoFireExceptions into several exceptions (Encrypt / Decrypt)
+        } catch (e: CryptoFireException) {
+            webSocket.close(1000, null)
+            println("Closing socket")
+            //TODO Error message to display to inform users
+
         }
     }
 
