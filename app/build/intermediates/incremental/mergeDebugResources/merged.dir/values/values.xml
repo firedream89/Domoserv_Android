@@ -376,6 +376,11 @@
     <string name="abc_shareactionprovider_share_with_application">Share with <ns1:g example="Mail" id="application_name">%s</ns1:g></string>
     <string name="abc_toolbar_collapse_description">Collapse</string>
     <string name="app_name">Domoserv_Android</string>
+    <string name="connect">Connect</string>
+    <string name="connexion">Connexion</string>
+    <string name="ip">Ip :</string>
+    <string name="password">Password :</string>
+    <string name="port">Port :</string>
     <string name="search_menu_title">Search</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>

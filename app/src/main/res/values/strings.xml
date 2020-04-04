@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Domoserv_Android</string>
+    <string name="password">Password :</string>
+    <string name="port">Port :</string>
+    <string name="ip">Ip :</string>
+    <string name="connect">Connect</string>
+    <string name="connexion">Connexion</string>
 </resources>
