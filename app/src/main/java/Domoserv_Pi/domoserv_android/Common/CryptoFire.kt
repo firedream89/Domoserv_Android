@@ -7,53 +7,45 @@ import kotlin.random.Random
 
 //keySize : Défini la taille de la clé de cryptage
 //codeSize : défini la difficulté du cryptage basé sur le mot de passe, celui-ci doit être au minimum de la taille du codeSize
-class CryptoFire(private var keySize: Int, private var codeSize: Int, private var key: String) {
-    constructor() : this(50, 4, "")
+class CryptoFire(private var key: String) {
+    private var codeSize: Int = 4
+    private var keySize: Int = 50
 
-    var m_key: String = ""
-    var m_codeSize: Int = 0
-    var m_EncryptedKeys = mutableListOf("")
+    private var myEncryptedKeys = mutableListOf("")
 
     init {
-        if (keySize <= 0) keySize = 50
-        if (codeSize <= 0) codeSize = 4
-        m_codeSize = codeSize
-        if (key.isEmpty()) Generate_Key(keySize)
-        else m_key = key
-    }
-
-    fun Get_Key(): String {
-        return m_key
+        this.key = if (this.key.isEmpty()) generateKey(keySize) else this.key
     }
 
     //Création d'une nouvelle clé de cryptage ayant pour nom "name" et suivant le mot de passe "password"
 //le "password" doit être >= au codeSize
-    fun Add_Encrypted_Key(name: String, password: String): Boolean {
-        for (i in 0 until m_EncryptedKeys.count()) {
-            if (m_EncryptedKeys[i].contains(name)) {
+    @ExperimentalUnsignedTypes
+    fun addEncryptedKey(name: String, password: String): Boolean {
+        for (i in 0 until this.myEncryptedKeys.count()) {
+            if (this.myEncryptedKeys[i].contains(name)) {
                 println("Une clé possède déjà ce nom !")
                 return false
             }
         }
-        if (password.count() < m_codeSize) {
-            println("Le mot de passe est de taille inférieur à $m_codeSize")
+        if (password.count() < this.codeSize) {
+            println("Le mot de passe est de taille inférieur à ${this.codeSize}")
             return false
         }
-        val result: String = Encrypt_Key(password)
+        val result: String = encryptKey(password)
         if (result.isEmpty()) {
             println("Echec de création de la clé !")
             return false
         }
 
-        m_EncryptedKeys.add("$name|$result")
+        this.myEncryptedKeys.add("$name|$result")
         return true
     }
 
     //Suppression de la clé de cryptage "name"
-    fun Remove_Encrypted_Key(name: String): Boolean {
-        for (i in 0 until m_EncryptedKeys.count()) {
-            if (m_EncryptedKeys[i].contains(name)) {
-                m_EncryptedKeys.removeAt(i)
+    fun removeEncryptedKey(name: String): Boolean {
+        for (i in 0 until this.myEncryptedKeys.count()) {
+            if (this.myEncryptedKeys[i].contains(name)) {
+                this.myEncryptedKeys.removeAt(i)
                 return true
             }
         }
@@ -61,12 +53,12 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
     }
 
     //Décryptage des données "data" avec la clé correspondante "name"
-    fun Decrypt_Data(data: String, name: String): String {
+    fun decryptData(data: String, name: String): String {
         //Obtention de la clé de cryptage
-        var k = listOf<String>("")
-        for (i in 0 until m_EncryptedKeys.count()) {
-            if (m_EncryptedKeys[i].split("|").first() == name) {
-                k = m_EncryptedKeys[i].split("|").last().split(" ")
+        var k = listOf("")
+        for (i in 0 until this.myEncryptedKeys.count()) {
+            if (this.myEncryptedKeys[i].split("|").first() == name) {
+                k = this.myEncryptedKeys[i].split("|").last().split(" ")
             }
         }
         if (k.isEmpty()) {
@@ -74,7 +66,7 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
         }
 
         //décryptage des données
-        var decrypt: String = ""
+        var decrypt = ""
         var idk = 0
         for (i in 0 until data.count()) {
             if (idk == k.count()) {
@@ -83,13 +75,15 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
             var t = data[i].toInt()
             if (t == 251) {//retour a '
                 t = 34
-            } else if (t == 252) {//retour a "
+            }
+            if (t == 252) {//retour a "
                 t = 39
             }
             t += k[idk].toInt()
             if (t < 0) {
                 t += 250
-            } else if (t > 250) {
+            }
+            if (t > 250) {
                 t -= 250
             }
             decrypt += t.toChar()
@@ -101,12 +95,12 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
 
 
     //Cryptage des données "data" avec la clé correspondante "name"
-    fun Encrypt_Data(data: String, name: String): String {
+    fun encryptData(data: String, name: String): String {
         //Obtention de la clé de cryptage
         var k = listOf<String>()
-        for (i in 0 until m_EncryptedKeys.count()) {
-            if (m_EncryptedKeys[i].split("|").first() == name) {
-                k = m_EncryptedKeys[i].split("|").last().split(" ")
+        for (i in 0 until this.myEncryptedKeys.count()) {
+            if (this.myEncryptedKeys[i].split("|").first() == name) {
+                k = this.myEncryptedKeys[i].split("|").last().split(" ")
             }
 
         }
@@ -125,12 +119,14 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
             t -= k[idk].toInt()
             if (t > 250) {
                 t -= 250
-            } else if (t < 0) {
+            }
+            if (t < 0) {
                 t += 250
             }
             if (t == 34) {//si '
                 t = 251
-            } else if (t == 39) {//si "
+            }
+            if (t == 39) {//si "
                 t = 252
             }
             crypt += t.toChar()
@@ -142,74 +138,84 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
     //Génération de la clé original de la taille "keySize"
     //Clé généré par le serveur
     //Cette clé sera transmise au clients
-    private fun Generate_Key(keySize: Int) {
+    private fun generateKey(keySize: Int): String {
         var key = ""
 
         for (i in 0 until keySize) {
             key += Random.nextInt(0, 250).toString()
-            if(key.split(" ").count() < keySize)
+            if (key.split(" ").count() < keySize)
                 key += " "
         }
 
-        m_key = key
+        return key
     }
 
     //Génération d'une nouvelle clé suivant le mot de passe et la clé original
     //Clé privé non transmise, sera utilisé pour crypter/décrypter les données
     //Clé généré par le client et le serveur
-    private fun Encrypt_Key(password: String): String {
+    @ExperimentalUnsignedTypes
+    private fun encryptKey(password: String): String {
         //le mot de passe  doit être minimum de taille identique au "codeSize"
-        if (password.count() < m_codeSize) {
+        if (password.count() < this.codeSize) {
             return "Error : WebPassword is too short !"
         }
 
         //Génération du code
-        val code = Array<Int>(m_codeSize) { 0 }
-        for (i in 0 until m_codeSize) {
-            code[i] = Character.getNumericValue(password[i]) % 3
-        }
+        val code = generateCode(password)
 
         //Génération de la clé suivant code et password
+        return generateKey(password, code)
+    }
+
+    private fun generateCode(password: String): Array<Int> {
+        val code = emptyArray<Int>()
+        Array(this.codeSize) { 0 }
+        for (i in 0 until this.codeSize) {
+            code[i] = Character.getNumericValue(password[i]) % 3
+        }
+        return code
+    }
+
+    @ExperimentalUnsignedTypes
+    private fun generateKey(password: String, code: Array<Int>): String {
         var ekey = ""
         var intCode = 0
         var intPassword = 0
-        for (i in 0 until m_key.split(" ").count()) {
+        for (i in 0 until this.key.split(" ").count()) {
             var tchar: UInt
-            if (code[intCode] == 0) {
-                tchar = m_key.split(" ")[i].toUInt() + password[intPassword].toInt().toUInt()
-            } else if (code[intCode] == 1) {
-                tchar = m_key.split(" ")[i].toUInt() - password[intPassword].toInt().toUInt()
-            } else if (code[intCode] == 2) {
-                tchar = m_key.split(" ")[i].toUInt() * password[intPassword].toInt().toUInt()
-            } else if (code[intCode] == 3) {
-                tchar = m_key.split(" ")[i].toUInt() / password[intPassword].toInt().toUInt()
-            } else {
-                return "EncryptPKEY : Code is corrupted ! key not encrypted !"
+            tchar = when (code[intCode]) {
+                0 -> this.key.split(" ")[i].toUInt() + password[intPassword].toInt().toUInt()
+                1 -> this.key.split(" ")[i].toUInt() - password[intPassword].toInt().toUInt()
+                2 -> this.key.split(" ")[i].toUInt() * password[intPassword].toInt().toUInt()
+                3 -> this.key.split(" ")[i].toUInt() / password[intPassword].toInt().toUInt()
+                else -> 0U
             }
+
+            if (tchar == 0U) throw Exception("EncryptPKEY : Code is corrupted ! key not encrypted !")
 
             //Modification de la valeur si supérieur à 250
             if (tchar > 250u) {
                 tchar = tchar % 250u
             }
-            if(i == m_key.split(" ").count()-1)
+            if (i == this.key.split(" ").count() - 1)
                 ekey += tchar
             else
                 ekey += "$tchar "
             intCode++
-            if (intCode >= m_codeSize) {
+            if (intCode >= this.codeSize) {
                 intCode = 0
             }
-            intPassword++;
+            intPassword++
             if (intPassword >= password.count()) {
                 intPassword = 0
             }
         }
 
-        if(ekey.split(" ").count() == m_key.split(" ").count()) {
-            return ekey
+        return if (ekey.split(" ").count() == this.key.split(" ").count()) {
+            ekey
+        } else {
+            "Echec de la génération de la nouvelle clé !"
         }
-        else {
-            return "Echec de la génération de la nouvelle clé !";
-        }
+
     }
 }

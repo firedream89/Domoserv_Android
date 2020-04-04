@@ -29,7 +29,7 @@ open class WebSock {
 }
 
 private class EchoWebSocketListener(private val password: String) : WebSocketListener() {
-    private var m_crypto = CryptoFire()
+    private lateinit var m_crypto: CryptoFire
     private var m_ready = false
     private val m_name = "Android"
 
@@ -41,19 +41,19 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
+        m_crypto = CryptoFire(text)
         if (text.split(" ").count() == 50) {
-            m_crypto = CryptoFire(50, 4, text)
-            if (!m_crypto.Add_Encrypted_Key(m_name, password)) {
+            if (!m_crypto.addEncryptedKey(m_name, password)) {
                 webSocket.close(1000, null)
                 println("Closing socket")
             } else {
                 var data = "OK $m_name"
-                webSocket.send(m_crypto.Encrypt_Data(data,m_name))
+                webSocket.send(m_crypto.encryptData(data,m_name))
                 m_ready = true
             }
         }
         else {
-            println(m_crypto.Decrypt_Data(text, m_name))
+            println(m_crypto.decryptData(text, m_name))
         }
     }
 
