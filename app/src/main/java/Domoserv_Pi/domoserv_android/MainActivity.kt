@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlin.math.log
 
 
 enum class State { Confort, Eco, HorsGel }
@@ -30,14 +29,11 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
             if (data != null) {
                 if (data.hasExtra("Ip") && data.hasExtra("Port") && data.hasExtra("Password")) {
-                    Log.w("Test","Test")
                     ws.connect(data.extras?.getString("Ip")!!,data.extras?.getString("Port")!!.toInt(),data.extras?.getString("Password")!!)
-                    Log.w("Test","Test")
                     while(ws.isOpen()) {
                         if(ws.isReady()) {
                             break
                         }
-                        Log.w("Test","Test")
                     }
                     if(!ws.isReady()) {
                         Toast.makeText(this,"Fail !",Toast.LENGTH_SHORT).show()

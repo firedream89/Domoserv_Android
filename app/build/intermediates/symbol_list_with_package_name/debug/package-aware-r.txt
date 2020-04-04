@@ -888,6 +888,9 @@ string abc_toolbar_collapse_description
 string app_name
 string connect
 string connexion
+string connexionIpError
+string connexionPasswordError
+string connexionPortError
 string ip
 string password
 string port

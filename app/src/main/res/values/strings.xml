@@ -5,4 +5,7 @@
     <string name="ip">Ip :</string>
     <string name="connect">Connect</string>
     <string name="connexion">Connexion</string>
+    <string name="connexionIpError">The Ip field must not be empty</string>
+    <string name="connexionPortError">The Port must be between 49152 and 65535</string>
+    <string name="connexionPasswordError">The Password field must not be empty !</string>
 </resources>
