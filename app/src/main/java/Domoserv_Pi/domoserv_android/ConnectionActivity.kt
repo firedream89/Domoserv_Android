@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import java.io.*
 
 
 class ConnectionActivity : AppCompatActivity() {
@@ -15,7 +17,43 @@ class ConnectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_connection)
+        var firstAttempt = true
 
+        //Extract value from parent
+        if(intent.hasExtra("FirstAttempt")) {
+            firstAttempt = intent.extras?.getBoolean("FirstAttempt") ?: false
+        }
+
+        //Extract saved values in file
+        val path = intent.extras?.getString("Path")
+        if(path != null && path.isNotEmpty()) {
+            val file = File("$path/Identifiers.txt")
+            if(!file.exists()) {
+                file.createNewFile()
+            }
+            val result = file.readLines()
+            println(result)
+            for(i in 0 until result.count()) {
+                if (result[i].contains("Ip")) {
+                    findViewById<EditText>(R.id.ip).setText(result[i].split("=").last())
+                }
+                if (result[i].contains("Port")) {
+                    findViewById<EditText>(R.id.port).setText(result[i].split("=").last())
+                }
+                if (result[i].contains("Password")) {
+                    findViewById<EditText>(R.id.password).setText(result[i].split("=").last())
+                }
+            }
+
+            //close activity if first connection
+            if(firstAttempt) {
+                if(editIsValid()) {
+                    this.finish()
+                }
+            }
+        }
+
+        //On click, Control and send values to parent
         val button = findViewById<Button>(R.id.connect)
         button.setOnClickListener {
             button.isEnabled = false
@@ -31,12 +69,28 @@ class ConnectionActivity : AppCompatActivity() {
     override fun finish() {
         val data = Intent()
 
-        val ip = findViewById<EditText>(R.id.ip)
-        val port = findViewById<EditText>(R.id.port)
-        val password = findViewById<EditText>(R.id.password)
-        data.putExtra("Ip", ip.text.toString())
-        data.putExtra("Port", port.text.toString())
-        data.putExtra("Password", password.text.toString())
+        val ip = findViewById<EditText>(R.id.ip).text.toString()
+        val port = findViewById<EditText>(R.id.port).text.toString()
+        val password = findViewById<EditText>(R.id.password).text.toString()
+        val saveIdentifier = findViewById<CheckBox>(R.id.saveIdentifiers).isChecked
+
+        data.putExtra("Ip", ip)
+        data.putExtra("Port", port)
+        data.putExtra("Password", password)
+
+        if(saveIdentifier) {
+            val path = intent.extras?.getString("Path")
+            if (path != null && path.isNotEmpty()) {
+                val file = File("$path/Identifiers.txt")
+                if (!file.exists()) {
+                    file.createNewFile()
+                } else {
+                    file.delete()
+                    file.createNewFile()
+                }
+                file.writeText("Ip=$ip\nPort=$port\nPassword=$password\n")
+            }
+        }
 
         setResult(Activity.RESULT_OK, data)
         super.finish()
@@ -44,16 +98,13 @@ class ConnectionActivity : AppCompatActivity() {
 
     private fun editIsValid(): Boolean {
         val ip = findViewById<EditText>(R.id.ip).text.toString()
-        var port = findViewById<EditText>(R.id.port).text.toString()
-        if(port.isEmpty()) {
-            port = "0"
-        }
+        val port = findViewById<EditText>(R.id.port).text.toString()
         val password = findViewById<EditText>(R.id.password).text.toString()
 
         if(ip.isEmpty()) {
             Toast.makeText(this,getString(R.string.connexionIpError), Toast.LENGTH_SHORT).show()
         }
-        else if(port.toInt() < 49152 || port.toInt() > 65535) {
+        else if(port.isEmpty() || port.toInt() < 49152 || port.toInt() > 65535) {
             Toast.makeText(this,getString(R.string.connexionPortError), Toast.LENGTH_SHORT).show()
         }
         else if(password.isEmpty()) {

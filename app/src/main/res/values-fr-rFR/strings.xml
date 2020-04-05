@@ -9,4 +9,5 @@
     <string name="connexionIpError">Le champ Ip doit être remplis !</string>
     <string name="connexionPortError">Le Port doit être entre 49152 et 65535</string>
     <string name="connexionPasswordError">Le champ Mot de passe doit être remplis !</string>
+    <string name="save_the_identifiers">Mémoriser les identifiants</string>
 </resources>
