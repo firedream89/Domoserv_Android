@@ -28,6 +28,10 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent,0)
     }
 
+    private fun startUpdate() {
+        ws.send("CVOrder|GetZ1Order")
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
             if (data != null && data.hasExtra("Ip") && data.hasExtra("Port") && data.hasExtra("Password")) {
@@ -49,8 +53,14 @@ class MainActivity : AppCompatActivity() {
                     startActivityForResult(intent,0)
                 } else {
                     Toast.makeText(this,"Connected !",Toast.LENGTH_SHORT).show()
+                    startUpdate()
                 }
             }
         }
+    }
+
+    override fun finish() {
+        ws.disconnect()
+        super.finish()
     }
 }

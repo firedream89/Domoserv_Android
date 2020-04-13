@@ -33,15 +33,15 @@ class ConnectionActivity : AppCompatActivity() {
             }
             val result = file.readLines()
             println(result)
-            for(i in 0 until result.count()) {
-                if (result[i].contains("Ip")) {
-                    findViewById<EditText>(R.id.ip).setText(result[i].split("=").last())
+            for(res in result) {
+                if (res.contains("Ip")) {
+                    findViewById<EditText>(R.id.ip).setText(res.split("=").last())
                 }
-                if (result[i].contains("Port")) {
-                    findViewById<EditText>(R.id.port).setText(result[i].split("=").last())
+                if (res.contains("Port")) {
+                    findViewById<EditText>(R.id.port).setText(res.split("=").last())
                 }
-                if (result[i].contains("Password")) {
-                    findViewById<EditText>(R.id.password).setText(result[i].split("=").last())
+                if (res.contains("Password")) {
+                    findViewById<EditText>(R.id.password).setText(res.split("=").last())
                 }
             }
 
@@ -67,8 +67,8 @@ class ConnectionActivity : AppCompatActivity() {
     }
 
     override fun finish() {
-        val data = Intent()
 
+        val data = Intent()
         val ip = findViewById<EditText>(R.id.ip).text.toString()
         val port = findViewById<EditText>(R.id.port).text.toString()
         val password = findViewById<EditText>(R.id.password).text.toString()

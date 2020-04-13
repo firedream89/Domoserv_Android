@@ -2,6 +2,8 @@ package Domoserv_Pi.domoserv_android.Common
 
 import okhttp3.*
 
+enum class NetworkError { NoError, PasswordError, DataError }
+
 open class WebSock {
     private var mWs: WebSocket? = null
     private var mWsListener: EchoWebSocketListener? = null
@@ -13,7 +15,7 @@ open class WebSock {
         mWs = ws?.newWebSocket(request, mWsListener!!)
     }
     fun send(data: String) {
-        mWs?.send(data)
+        mWs?.send(mWsListener?.getCrypto()!!.Encrypt_Data(data,"Android"))
     }
 
     fun Update() {
@@ -48,6 +50,10 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
         return mReady
     }
 
+    fun getCrypto(): CryptoFire {
+        return mCrypto
+    }
+
     fun isOpen(): Boolean {
         return mOpen
     }
@@ -65,13 +71,23 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
                 mReady = false
                 mOpen = false
             } else {
-                var data = "OK $mName"
+                var data = "${NetworkError.NoError.ordinal} $mName"
                 webSocket.send(mCrypto.Encrypt_Data(data,mName))
-                mReady = true
             }
         }
         else {
-            println(mCrypto.Decrypt_Data(text, mName))
+            when (text) {
+                NetworkError.NoError.ordinal.toString() -> mReady = true
+                NetworkError.PasswordError.ordinal.toString() -> {
+                    println("Password Error")
+                    mReady = false
+                }
+                NetworkError.DataError.ordinal.toString() -> {
+                    println("Data Error")
+                    mReady = false
+                }
+                else -> println(mCrypto.Decrypt_Data(text, mName))
+            }
         }
     }
 
