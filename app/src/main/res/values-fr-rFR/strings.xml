@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Domoserv_Android</string>
+    <string name="password">Mot de passe :</string>
+    <string name="port">Port :</string>
+    <string name="ip">Ip :</string>
+    <string name="connect">Connexion</string>
+    <string name="connexion">Connection</string>
+    <string name="connexionIpError">Le champ Ip doit être remplis !</string>
+    <string name="connexionPortError">Le Port doit être entre 49152 et 65535</string>
+    <string name="connexionPasswordError">Le champ Mot de passe doit être remplis !</string>
+    <string name="save_the_identifiers">Mémoriser les identifiants</string>
+</resources>

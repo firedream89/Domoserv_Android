@@ -24,6 +24,7 @@
         android:testOnly="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true" >
+        <activity android:name="Domoserv_Pi.domoserv_android.ConnectionActivity" />
         <activity android:name="Domoserv_Pi.domoserv_android.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

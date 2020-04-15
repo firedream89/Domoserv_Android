@@ -44,6 +44,10 @@
         "source": "C:\\Users\\Kevin\\AndroidStudioProjects\\domoserv_Android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher.png"
     },
     {
+        "merged": "C:\\Users\\Kevin\\AndroidStudioProjects\\domoserv_Android\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_connection.xml.flat",
+        "source": "C:\\Users\\Kevin\\AndroidStudioProjects\\domoserv_Android\\app\\src\\main\\res\\layout\\activity_connection.xml"
+    },
+    {
         "merged": "C:\\Users\\Kevin\\AndroidStudioProjects\\domoserv_Android\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi_ic_launcher_round.png.flat",
         "source": "C:\\Users\\Kevin\\AndroidStudioProjects\\domoserv_Android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png"
     },

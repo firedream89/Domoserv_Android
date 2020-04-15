@@ -2,67 +2,105 @@ package Domoserv_Pi.domoserv_android.Common
 
 import okhttp3.*
 
+enum class NetworkError { NoError, PasswordError, DataError }
+
 open class WebSock {
-    private var m_ws: OkHttpClient? = OkHttpClient()
+    private var mWs: WebSocket? = null
+    private var mWsListener: EchoWebSocketListener? = null
 
     fun connect(url: String, port: Int, password: String) {
+        val ws: OkHttpClient? = OkHttpClient()
         val request = Request.Builder().url("ws://$url:$port").build()
-        val listener = EchoWebSocketListener(password)
-        val webSock = m_ws?.newWebSocket(request, listener)
-        if (webSock != null) {
-            while(!listener.isReady()) {}
-            println("Connected")
-        }
+        mWsListener = EchoWebSocketListener(password)
+        mWs = ws?.newWebSocket(request, mWsListener!!)
+    }
+    fun send(data: String) {
+        mWs?.send(mWsListener?.getCrypto()!!.Encrypt_Data(data,"Android"))
+    }
 
-        fun send(data: String) {
-            webSock?.send(data)
-        }
+    fun Update() {
 
-        fun Update() {
+    }
 
-        }
+    fun disconnect() {
+        mWs?.close(1000,null)
+    }
 
-        fun disconnect() {
-            webSock?.close(1000,null)
+    fun isReady(): Boolean {
+        if(mWsListener != null) {
+            return mWsListener!!.isReady()
         }
+        return false
+    }
+    fun isOpen(): Boolean {
+        if(mWsListener != null) {
+            return mWsListener!!.isOpen()
+        }
+        return false
     }
 }
 
 private class EchoWebSocketListener(private val password: String) : WebSocketListener() {
-    private var m_crypto = CryptoFire()
-    private var m_ready = false
-    private val m_name = "Android"
+    private var mCrypto = CryptoFire()
+    private var mReady = false
+    private var mOpen = true
+    private val mName = "Android"
 
     fun isReady(): Boolean {
-        return m_ready
+        return mReady
+    }
+
+    fun getCrypto(): CryptoFire {
+        return mCrypto
+    }
+
+    fun isOpen(): Boolean {
+        return mOpen
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
+        mOpen = true
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         if (text.split(" ").count() == 50) {
-            m_crypto = CryptoFire(50, 4, text)
-            if (!m_crypto.Add_Encrypted_Key(m_name, password)) {
-                webSocket.close(1000, null)
+            mCrypto = CryptoFire(50, 4, text)
+            if (!mCrypto.Add_Encrypted_Key(mName, password)) {
+                webSocket.close(1000, "Bad encrypted key")
                 println("Closing socket")
+                mReady = false
+                mOpen = false
             } else {
-                var data = "OK $m_name"
-                webSocket.send(m_crypto.Encrypt_Data(data,m_name))
-                m_ready = true
+                var data = "${NetworkError.NoError.ordinal} $mName"
+                webSocket.send(mCrypto.Encrypt_Data(data,mName))
             }
         }
         else {
-            println(m_crypto.Decrypt_Data(text, m_name))
+            when (text) {
+                NetworkError.NoError.ordinal.toString() -> mReady = true
+                NetworkError.PasswordError.ordinal.toString() -> {
+                    println("Password Error")
+                    mReady = false
+                }
+                NetworkError.DataError.ordinal.toString() -> {
+                    println("Data Error")
+                    mReady = false
+                }
+                else -> println(mCrypto.Decrypt_Data(text, mName))
+            }
         }
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
         webSocket.close(1000, null)
         println("Closing : $code / $reason")
+        mReady = false
+        mOpen = false
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         println("Error : " + t.message)
+        mReady = false
+        mOpen = false
     }
 }
