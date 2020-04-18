@@ -5,9 +5,25 @@
     <string name="port">Port :</string>
     <string name="ip">Ip :</string>
     <string name="connect">Connexion</string>
-    <string name="connexion">Connection</string>
+    <string name="connexion">Connexion</string>
     <string name="connexionIpError">Le champ Ip doit être remplis !</string>
     <string name="connexionPortError">Le Port doit être entre 49152 et 65535</string>
     <string name="connexionPasswordError">Le champ Mot de passe doit être remplis !</string>
     <string name="save_the_identifiers">Mémoriser les identifiants</string>
+    <string name="wsPasswordError">Mauvais mot de passe</string>
+    <string name="wsDataError">Données corrompu, mauvais mot de passe ?</string>
+    <string name="state">Etat</string>
+    <string name="mode">Mode</string>
+    <string name="remaining_time">Temps restant</string>
+    <string name="tempInt">Température intérieur</string>
+    <string name="actual">Actuel</string>
+    <string name="daily_consumption">Consommation journalière</string>
+    <string name="daily_cost">Coût journalier</string>
+    <string name="tempExt">Température extérieur</string>
+    <string name="min">Min</string>
+    <string name="max">Max</string>
+    <string name="kwh">0kw/h</string>
+    <string name="euro">0€</string>
+    <string name="zone_1">Zone 1</string>
+    <string name="zone_2">Zone 2</string>
 </resources>

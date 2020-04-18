@@ -1,8 +1,10 @@
 package Domoserv_Pi.domoserv_android.Common
 
+import Domoserv_Pi.domoserv_android.R
 import okhttp3.*
+import java.lang.Exception
 
-enum class NetworkError { NoError, PasswordError, DataError }
+enum class NetworkError { NoError, PasswordError, DataError, UnknownError }
 
 open class WebSock {
     private var mWs: WebSocket? = null
@@ -22,8 +24,20 @@ open class WebSock {
 
     }
 
+    fun getLastMessage(): String {
+        return mWsListener?.getLastMessage() ?: ""
+    }
+
+    fun isReadyRead(): Boolean {
+        return mWsListener?.isReadyRead() ?: false
+    }
+
     fun disconnect() {
         mWs?.close(1000,null)
+    }
+
+    fun getLastError(): Int {
+        return mWsListener?.getLastErrorCode() ?: -1
     }
 
     fun isReady(): Boolean {
@@ -45,6 +59,9 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
     private var mReady = false
     private var mOpen = true
     private val mName = "Android"
+    private var mErrorCode = 0
+    private var mMessage = ""
+    private var mReadyRead = false
 
     fun isReady(): Boolean {
         return mReady
@@ -56,6 +73,19 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
 
     fun isOpen(): Boolean {
         return mOpen
+    }
+
+    fun getLastErrorCode(): Int {
+        return mErrorCode
+    }
+
+    fun isReadyRead(): Boolean {
+        return mReadyRead
+    }
+
+    fun getLastMessage(): String {
+        mReadyRead = false
+        return mMessage
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -71,22 +101,28 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
                 mReady = false
                 mOpen = false
             } else {
-                var data = "${NetworkError.NoError.ordinal} $mName"
+                val data = "${NetworkError.NoError.ordinal} $mName"
                 webSocket.send(mCrypto.Encrypt_Data(data,mName))
             }
         }
         else {
-            when (text) {
-                NetworkError.NoError.ordinal.toString() -> mReady = true
-                NetworkError.PasswordError.ordinal.toString() -> {
-                    println("Password Error")
-                    mReady = false
+            if(text.count() == 1) {
+                when (text.toInt()) {
+                    NetworkError.NoError.ordinal -> mReady = true
+                    NetworkError.PasswordError.ordinal -> {
+                        mReady = false
+                        mErrorCode = NetworkError.PasswordError.ordinal
+                    }
+                    NetworkError.DataError.ordinal -> {
+                        mReady = false
+                        mErrorCode = NetworkError.DataError.ordinal
+                    }
+                    else -> mErrorCode = NetworkError.UnknownError.ordinal
                 }
-                NetworkError.DataError.ordinal.toString() -> {
-                    println("Data Error")
-                    mReady = false
-                }
-                else -> println(mCrypto.Decrypt_Data(text, mName))
+            }
+            else {
+                mMessage = mCrypto.Decrypt_Data(text, mName)
+                mReadyRead = true
             }
         }
     }
@@ -99,8 +135,8 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        println("Error : " + t.message)
         mReady = false
         mOpen = false
+        println(t.message)
     }
 }
