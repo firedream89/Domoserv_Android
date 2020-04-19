@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Domoserv_Android</string>
+    <string name="password">Password :</string>
+    <string name="port">Port :</string>
+    <string name="ip">Ip :</string>
+    <string name="connect">Connect</string>
+    <string name="connexion">Connection</string>
+    <string name="connexionIpError">The Ip field must not be empty</string>
+    <string name="connexionPortError">The Port must be between 49152 and 65535</string>
+    <string name="connexionPasswordError">The Password field must not be empty !</string>
+    <string name="save_the_identifiers">Save the identifiers</string>
+    <string name="wsPasswordError">Password Error</string>
+    <string name="wsDataError">Data error, wrong password ?</string>
+    <string name="zone_1">Zone 1</string>
+    <string name="zone_2">Zone 2</string>
+    <string name="state">State</string>
+    <string name="mode">Mode</string>
+    <string name="remaining_time">Remaining time</string>
+    <string name="tempInt">Indoor temperature</string>
+    <string name="min">Min</string>
+    <string name="max">Max</string>
+    <string name="actual">Actual</string>
+    <string name="daily_consumption">Daily consumption</string>
+    <string name="daily_cost">Daily cost</string>
+    <string name="tempExt">Outdoor temperature</string>
+    <string name="kwh">0kw/h</string>
+    <string name="euro">0€</string>
+</resources>
