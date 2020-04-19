@@ -4,22 +4,24 @@ import okhttp3.*
 
 enum class NetworkError { NoError, PasswordError, DataError }
 
-open class WebSock {
+open class WebSock : WebSocketListener() {
     private var mWs: WebSocket? = null
-    private var mWsListener: EchoWebSocketListener? = null
+    private var mCrypto = CryptoFire()
+    private var mReady = false
+    private var mOpen = true
+    private val mName = "Android"
+    private var mPassword = ""
+    var mDecryptedText = ""
+    private var mError = NetworkError.NoError.ordinal
 
     fun connect(url: String, port: Int, password: String) {
+        mPassword = password
         val ws: OkHttpClient? = OkHttpClient()
         val request = Request.Builder().url("ws://$url:$port").build()
-        mWsListener = EchoWebSocketListener(password)
-        mWs = ws?.newWebSocket(request, mWsListener!!)
+        mWs = ws?.newWebSocket(request, this)
     }
     fun send(data: String) {
-        mWs?.send(mWsListener?.getCrypto()!!.Encrypt_Data(data,"Android"))
-    }
-
-    fun Update() {
-
+        mWs?.send(mCrypto.Encrypt_Data(data,"Android"))
     }
 
     fun disconnect() {
@@ -27,35 +29,15 @@ open class WebSock {
     }
 
     fun isReady(): Boolean {
-        if(mWsListener != null) {
-            return mWsListener!!.isReady()
-        }
-        return false
-    }
-    fun isOpen(): Boolean {
-        if(mWsListener != null) {
-            return mWsListener!!.isOpen()
-        }
-        return false
-    }
-}
-
-private class EchoWebSocketListener(private val password: String) : WebSocketListener() {
-    private var mCrypto = CryptoFire()
-    private var mReady = false
-    private var mOpen = true
-    private val mName = "Android"
-
-    fun isReady(): Boolean {
         return mReady
-    }
-
-    fun getCrypto(): CryptoFire {
-        return mCrypto
     }
 
     fun isOpen(): Boolean {
         return mOpen
+    }
+
+    fun getLastError(): Int {
+        return mError
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -65,7 +47,7 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
     override fun onMessage(webSocket: WebSocket, text: String) {
         if (text.split(" ").count() == 50) {
             mCrypto = CryptoFire(50, 4, text)
-            if (!mCrypto.Add_Encrypted_Key(mName, password)) {
+            if (!mCrypto.Add_Encrypted_Key(mName, mPassword)) {
                 webSocket.close(1000, "Bad encrypted key")
                 println("Closing socket")
                 mReady = false
@@ -86,7 +68,7 @@ private class EchoWebSocketListener(private val password: String) : WebSocketLis
                     println("Data Error")
                     mReady = false
                 }
-                else -> println(mCrypto.Decrypt_Data(text, mName))
+                else -> mDecryptedText = mCrypto.Decrypt_Data(text, mName)
             }
         }
     }

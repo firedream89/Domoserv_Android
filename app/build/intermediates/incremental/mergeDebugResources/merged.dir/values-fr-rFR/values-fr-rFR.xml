@@ -9,4 +9,5 @@
     <string name="ip">Ip :</string>
     <string name="password">Mot de passe :</string>
     <string name="port">Port :</string>
+    <string name="save_the_identifiers">Mémoriser les identifiants</string>
 </resources>

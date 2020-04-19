@@ -745,6 +745,7 @@ id radio
 id right
 id right_icon
 id right_side
+id saveIdentifiers
 id screen
 id scrollIndicatorDown
 id scrollIndicatorUp
@@ -894,6 +895,7 @@ string connexionPortError
 string ip
 string password
 string port
+string save_the_identifiers
 string search_menu_title
 string status_bar_notification_info_overflow
 style AlertDialog_AppCompat
