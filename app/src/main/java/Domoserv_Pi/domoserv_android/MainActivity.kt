@@ -16,7 +16,10 @@ import okhttp3.Dispatcher
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.*
+<<<<<<< HEAD
 import okhttp3.WebSocket
+=======
+>>>>>>> feature/MainActivity
 
 
 enum class State { Confort, Eco, HorsGel }
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private val stateList = listOf("Confort", "Eco", "HorsGel")
     private val modeList = listOf("Auto", "SemiAuto", "Manual")
 
+<<<<<<< HEAD
     inner class WebSocket() : WebSock() {
         override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
             super.onMessage(webSocket, text)
@@ -36,6 +40,11 @@ class MainActivity : AppCompatActivity() {
             mDecryptedText = ""
         }
     }
+=======
+    private var ws = WebSock()
+    private val stateList = listOf("Confort", "Eco", "HorsGel")
+    private val modeList = listOf("Auto", "SemiAuto", "Manual")
+>>>>>>> feature/MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun startUpdate() {
         ws.send("CVOrder|GetZ1Order")
+<<<<<<< HEAD
         ws.send("CVOrder|GetZ2Order")
         ws.send("CVOrder|GetZ1Status")
         ws.send("CVOrder|GetZ2Status")
@@ -60,6 +70,38 @@ class MainActivity : AppCompatActivity() {
         val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
         ws.send("CVOrder|GetDataCPTEnergy;$dateYear:$date")
+=======
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        ws.send("CVOrder|GetZ2Order")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        ws.send("CVOrder|GetZ1Status")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        ws.send("CVOrder|GetZ2Status")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        ws.send("CVOrder|GetRemainingTimeZ1")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        ws.send("CVOrder|GetRemainingTimeZ2")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        ws.send("CVOrder|GetTemp;0")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        ws.send("CVOrder|GetTemp;1")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
+        ws.send("CVOrder|GetDataCPTEnergy;$dateYear:$date")
+        while(!ws.isReadyRead());
+        updateField(ws.getLastMessage())
+       // delay(60000)
+        startUpdate()
+>>>>>>> feature/MainActivity
     }
 
     fun updateField(data: String) {

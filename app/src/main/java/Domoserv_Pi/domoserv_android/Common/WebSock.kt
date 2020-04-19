@@ -1,8 +1,10 @@
 package Domoserv_Pi.domoserv_android.Common
 
+import Domoserv_Pi.domoserv_android.R
 import okhttp3.*
+import java.lang.Exception
 
-enum class NetworkError { NoError, PasswordError, DataError }
+enum class NetworkError { NoError, PasswordError, DataError, UnknownError }
 
 open class WebSock : WebSocketListener() {
     private var mWs: WebSocket? = null
@@ -24,11 +26,49 @@ open class WebSock : WebSocketListener() {
         mWs?.send(mCrypto.Encrypt_Data(data,"Android"))
     }
 
+    open fun getLastMessage(): String {
+        return mWsListener?.getLastMessage() ?: ""
+    }
+
+    fun isReadyRead(): Boolean {
+        return mWsListener?.isReadyRead() ?: false
+    }
+
     fun disconnect() {
         mWs?.close(1000,null)
     }
 
+    fun getLastError(): Int {
+        return mWsListener?.getLastErrorCode() ?: -1
+    }
+
     fun isReady(): Boolean {
+<<<<<<< HEAD
+=======
+        if(mWsListener != null) {
+            return mWsListener!!.isReady()
+        }
+        return false
+    }
+    fun isOpen(): Boolean {
+        if(mWsListener != null) {
+            return mWsListener!!.isOpen()
+        }
+        return false
+    }
+}
+
+private class EchoWebSocketListener(private val password: String) : WebSocketListener() {
+    private var mCrypto = CryptoFire()
+    private var mReady = false
+    private var mOpen = true
+    private val mName = "Android"
+    private var mErrorCode = 0
+    private var mMessage = ""
+    private var mReadyRead = false
+
+    fun isReady(): Boolean {
+>>>>>>> feature/MainActivity
         return mReady
     }
 
@@ -36,8 +76,22 @@ open class WebSock : WebSocketListener() {
         return mOpen
     }
 
+<<<<<<< HEAD
     fun getLastError(): Int {
         return mError
+=======
+    fun getLastErrorCode(): Int {
+        return mErrorCode
+    }
+
+    fun isReadyRead(): Boolean {
+        return mReadyRead
+    }
+
+    fun getLastMessage(): String {
+        mReadyRead = false
+        return mMessage
+>>>>>>> feature/MainActivity
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -53,22 +107,32 @@ open class WebSock : WebSocketListener() {
                 mReady = false
                 mOpen = false
             } else {
-                var data = "${NetworkError.NoError.ordinal} $mName"
+                val data = "${NetworkError.NoError.ordinal} $mName"
                 webSocket.send(mCrypto.Encrypt_Data(data,mName))
             }
         }
         else {
-            when (text) {
-                NetworkError.NoError.ordinal.toString() -> mReady = true
-                NetworkError.PasswordError.ordinal.toString() -> {
-                    println("Password Error")
-                    mReady = false
+            if(text.count() == 1) {
+                when (text.toInt()) {
+                    NetworkError.NoError.ordinal -> mReady = true
+                    NetworkError.PasswordError.ordinal -> {
+                        mReady = false
+                        mErrorCode = NetworkError.PasswordError.ordinal
+                    }
+                    NetworkError.DataError.ordinal -> {
+                        mReady = false
+                        mErrorCode = NetworkError.DataError.ordinal
+                    }
+                    else -> mErrorCode = NetworkError.UnknownError.ordinal
                 }
-                NetworkError.DataError.ordinal.toString() -> {
-                    println("Data Error")
-                    mReady = false
-                }
+<<<<<<< HEAD
                 else -> mDecryptedText = mCrypto.Decrypt_Data(text, mName)
+=======
+            }
+            else {
+                mMessage = mCrypto.Decrypt_Data(text, mName)
+                mReadyRead = true
+>>>>>>> feature/MainActivity
             }
         }
     }
@@ -81,8 +145,8 @@ open class WebSock : WebSocketListener() {
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        println("Error : " + t.message)
         mReady = false
         mOpen = false
+        println(t.message)
     }
 }
