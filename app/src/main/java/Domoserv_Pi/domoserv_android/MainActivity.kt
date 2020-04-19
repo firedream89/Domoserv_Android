@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun startUpdate() {
+    fun startUpdate() {
         ws.send("CVOrder|GetZ1Order")
         while(!ws.isReadyRead());
         updateField(ws.getLastMessage())
@@ -69,8 +69,8 @@ class MainActivity : AppCompatActivity() {
         ws.send("CVOrder|GetDataCPTEnergy;$dateYear:$date")
         while(!ws.isReadyRead());
         updateField(ws.getLastMessage())
-        delay(60000)
-        GlobalScope.launch { startUpdate() }
+       // delay(60000)
+        startUpdate()
     }
 
     fun updateField(data: String) {
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                     startActivityForResult(intent,0)
                 } else {
                     Toast.makeText(this,"Connected !",Toast.LENGTH_SHORT).show()
-                    GlobalScope.launch { startUpdate() }
+                    startUpdate()
                 }
             }
         }

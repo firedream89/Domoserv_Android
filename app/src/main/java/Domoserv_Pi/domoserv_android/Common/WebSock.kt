@@ -24,7 +24,7 @@ open class WebSock {
 
     }
 
-    fun getLastMessage(): String {
+    open fun getLastMessage(): String {
         return mWsListener?.getLastMessage() ?: ""
     }
 
