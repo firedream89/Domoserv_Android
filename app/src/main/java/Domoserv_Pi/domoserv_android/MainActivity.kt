@@ -1,13 +1,22 @@
 package Domoserv_Pi.domoserv_android
 
+import Domoserv_Pi.domoserv_android.Common.NetworkError
 import Domoserv_Pi.domoserv_android.Common.WebSock
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.provider.Settings
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import java.io.File
+import okhttp3.Dispatcher
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.*
+import okhttp3.WebSocket
 
 
 enum class State { Confort, Eco, HorsGel }
@@ -15,8 +24,18 @@ enum class Mode { Auto, SAuto, Manual }
 enum class Zone { unused, Z1, Z2 }
 
 class MainActivity : AppCompatActivity() {
+    
+    private var ws = WebSock()
+    private val stateList = listOf("Confort", "Eco", "HorsGel")
+    private val modeList = listOf("Auto", "SemiAuto", "Manual")
 
-    var ws = WebSock()
+    inner class WebSocket() : WebSock() {
+        override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
+            super.onMessage(webSocket, text)
+            updateField(mDecryptedText)
+            mDecryptedText = ""
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +47,98 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent,0)
     }
 
-    private fun startUpdate() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun startUpdate() {
         ws.send("CVOrder|GetZ1Order")
+        ws.send("CVOrder|GetZ2Order")
+        ws.send("CVOrder|GetZ1Status")
+        ws.send("CVOrder|GetZ2Status")
+        ws.send("CVOrder|GetRemainingTimeZ1")
+        ws.send("CVOrder|GetRemainingTimeZ2")
+        ws.send("CVOrder|GetTemp;0")
+        ws.send("CVOrder|GetTemp;1")
+        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
+        ws.send("CVOrder|GetDataCPTEnergy;$dateYear:$date")
+    }
+
+    fun updateField(data: String) {
+        if(data.contains("CVOrder")) {
+            if(data.contains("GetZ1Order")) {
+                findViewById<TextView>(R.id.stateZ1).text = stateList[data.split("=").last().toInt()]
+            }
+            if(data.contains("GetZ2Order")) {
+                findViewById<TextView>(R.id.stateZ2).text = stateList[data.split("=").last().toInt()]
+            }
+            if(data.contains("GetZ1Status")) {
+                findViewById<TextView>(R.id.modeZ1).text = modeList[data.split("=").last().toInt()]
+            }
+            if(data.contains("GetZ2Status")) {
+                findViewById<TextView>(R.id.modeZ2).text = modeList[data.split("=").last().toInt()]
+            }
+            if(data.contains("GetRemainingTimeZ1")) {
+                val t = data.split("=").last().toInt()
+                println(t)
+                val h = t / 60 / 60
+                val mn = t / 60 % 60
+                val result = "${ when(h){
+                        in 0..9 -> "0$h" 
+                        else -> h
+                    }}:${when(mn){
+                        in 0..9 -> "0$mn" 
+                        else -> mn
+                    }}"
+                findViewById<TextView>(R.id.timerZ1).text = result
+            }
+            if(data.contains("GetRemainingTimeZ2")) {
+                val t = data.split("=").last().toInt()
+                println(t)
+                val h = t / 60 / 60
+                val mn = t / 60 % 60
+                val result = "${ when(h){
+                    in 0..9 -> "0$h"
+                    else -> h
+                }}:${when(mn){
+                    in 0..9 -> "0$mn"
+                    else -> mn
+                }}"
+                findViewById<TextView>(R.id.timerZ2).text = result
+            }
+            if(data.contains("GetTemp;0")) {
+                val temp = data.split("=").last().split(":")
+                if(temp.count() == 3) {
+                    val min = temp.first() + "°C"
+                    val max = temp[1] + "°C"
+                    val actual = temp.last() + "°C"
+                    findViewById<TextView>(R.id.tempIntMin).text = min
+                    findViewById<TextView>(R.id.tempIntMax).text = max
+                    findViewById<TextView>(R.id.tempIntActual).text = actual
+                }
+            }
+            if(data.contains("GetTemp;1")) {
+                val temp = data.split("=").last().split(":")
+                if(temp.count() == 3) {
+                    val min = temp.first() + "°C"
+                    val max = temp[1] + "°C"
+                    val actual = temp.last() + "°C"
+                    findViewById<TextView>(R.id.tempExtMin).text = min
+                    findViewById<TextView>(R.id.tempExtMax).text = max
+                    findViewById<TextView>(R.id.tempExtActual).text = actual
+                }
+            }
+            if(data.contains("GetDataCPTEnergy")) {
+                var all = data.split("=").last().split("\r").toMutableList()
+                all.removeAt(all.count()-1)
+                var daily = 0
+                for (value in all) {
+                    daily += value.split("|").last().toInt()
+                }
+                val dailyCons = "${daily/1000.toDouble()}kw/h"
+                val dailyCost = "${daily/1000*0.1781}€"
+                findViewById<TextView>(R.id.consDaily).text = dailyCons
+                findViewById<TextView>(R.id.dailyCost).text = dailyCost
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -39,14 +148,21 @@ class MainActivity : AppCompatActivity() {
                 val port = data.extras?.getString("Port") ?: "0"
                 val password = data.extras?.getString("Password") ?: String()
 
-                ws.connect(ip,port.toInt(),password)
+                ws.connect(ip, port.toInt(), password)
+
                 while(ws.isOpen()) {
                     if(ws.isReady()) {
                         break
                     }
                 }
                 if(!ws.isReady()) {
-                    Toast.makeText(this,"Fail !",Toast.LENGTH_SHORT).show()
+                    val result = when (ws.getLastError()) {
+                        NetworkError.PasswordError.ordinal -> getString(R.string.wsPasswordError)
+                        NetworkError.DataError.ordinal -> getString(R.string.wsDataError)
+                        else -> ws.getLastError().toString()
+                    }
+                    Toast.makeText(this,result,Toast.LENGTH_SHORT).show()
+
                     val intent = Intent(this, ConnectionActivity::class.java)
                     intent.putExtra("Path",this.filesDir.path)
                     intent.putExtra("FirstAttempt",false)
