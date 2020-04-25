@@ -3,17 +3,21 @@ package Domoserv_Pi.domoserv_android
 import Domoserv_Pi.domoserv_android.Common.NetworkError
 import Domoserv_Pi.domoserv_android.Common.WebSock
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.Window
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.*
-import okhttp3.WebSocket
+
 
 enum class State { Confort, Eco, HorsGel }
 enum class Mode { Auto, SAuto, Manual }
@@ -21,11 +25,11 @@ enum class Zone { unused, Z1, Z2 }
 
 class MainActivity : AppCompatActivity() {
 
-    private var ws = WebSock()
+    private var ws = WebSocket()
+
     private val stateList = listOf("Confort", "Eco", "HorsGel")
     private val modeList = listOf("Auto", "SemiAuto", "Manual")
 
-<<<<<<< HEAD
     inner class WebSocket() : WebSock() {
         override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
             super.onMessage(webSocket, text)
@@ -33,26 +37,119 @@ class MainActivity : AppCompatActivity() {
             mDecryptedText = ""
         }
     }
-=======
-    private var ws = WebSock()
-    private val stateList = listOf("Confort", "Eco", "HorsGel")
-    private val modeList = listOf("Auto", "SemiAuto", "Manual")
->>>>>>> feature/MainActivity
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val intent = Intent(this, ConnectionActivity::class.java)
-        intent.putExtra("Path", this.filesDir.path)
-        intent.putExtra("FirstAttempt", true)
-        startActivityForResult(intent, 0)
+
+        intent.putExtra("Path",this.filesDir.path)
+        intent.putExtra("FirstAttempt",true)
+        startActivityForResult(intent,0)
+
+        findViewById<Button>(R.id.updateButton).setOnClickListener {
+            setUpdateCvOrder()
+        }
+
+        findViewById<TextView>(R.id.stateZ1).setOnClickListener {
+            showDialog("Zone 1 : State",0)
+        }
+        findViewById<TextView>(R.id.stateZ2).setOnClickListener {
+            showDialog("Zone 2 : State",0)
+        }
+        findViewById<TextView>(R.id.modeZ1).setOnClickListener {
+            showDialog("Zone 1 : Mode",1)
+        }
+        findViewById<TextView>(R.id.modeZ2).setOnClickListener {
+            showDialog("Zone 2 : Mode",1)
+        }
+    }
+
+    private fun setUpdateCvOrder() {
+        var clickable = false
+        val stateZ1 = findViewById<TextView>(R.id.stateZ1)
+        clickable = when(stateZ1.isClickable) {
+            true -> false
+            false -> true
+        }
+        val color = when(clickable) {
+            true -> Color.BLUE
+            false -> Color.BLACK
+        }
+        stateZ1.isClickable = clickable
+        findViewById<TextView>(R.id.stateZ2).isClickable = clickable
+        findViewById<TextView>(R.id.modeZ1).isClickable = clickable
+        findViewById<TextView>(R.id.modeZ2).isClickable = clickable
+        stateZ1.setTextColor(color)
+        findViewById<TextView>(R.id.stateZ2).setTextColor(color)
+        findViewById<TextView>(R.id.modeZ1).setTextColor(color)
+        findViewById<TextView>(R.id.modeZ2).setTextColor(color)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showDialog(title: String, type: Int) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.set_state_mode_dialog)
+        val body = dialog.findViewById(R.id.title) as TextView
+        body.text = title
+
+        val zone = when(title.contains("1")) {
+            true -> Zone.Z1.ordinal
+            false -> Zone.Z2.ordinal
+        }
+
+        val bt1 = dialog.findViewById(R.id.bt1) as Button
+        val bt2 = dialog.findViewById(R.id.bt2) as Button
+        val bt3 = dialog.findViewById(R.id.bt3) as Button
+
+        if(type == 1) {
+            bt1.text = "Manual"
+            bt2.text = "Automatic"
+            bt3.visibility = View.INVISIBLE
+        }
+        bt1.setOnClickListener {
+            when(type) {
+                0 -> changeState(zone, State.Confort.ordinal)
+                1 -> changeMode(zone, Mode.Manual.ordinal)
+            }
+            dialog.dismiss()
+        }
+        bt2.setOnClickListener {
+            when(type) {
+                0 -> changeState(zone, State.Eco.ordinal)
+                1 -> changeMode(zone, Mode.Auto.ordinal)
+            }
+            dialog.dismiss()
+        }
+        bt3.setOnClickListener {
+            when(type) {
+                0 -> changeState(zone, State.HorsGel.ordinal)
+                1 -> changeMode(zone, Mode.SAuto.ordinal)
+            }
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun changeState(zone: Int, state: Int) {
+        ws.send("CVOrder|SetZ${zone}Order=$state")
+        startUpdate()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun changeMode(zone: Int, mode: Int) {
+        ws.send("CVOrder|SetZ${zone}Status=$mode")
+        startUpdate()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun startUpdate() {
         ws.send("CVOrder|GetZ1Order")
-<<<<<<< HEAD
         ws.send("CVOrder|GetZ2Order")
         ws.send("CVOrder|GetZ1Status")
         ws.send("CVOrder|GetZ2Status")
@@ -62,39 +159,7 @@ class MainActivity : AppCompatActivity() {
         ws.send("CVOrder|GetTemp;1")
         val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
-        ws.send("CVOrder|GetDataCPTEnergy;$dateYear:$date")
-=======
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        ws.send("CVOrder|GetZ2Order")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        ws.send("CVOrder|GetZ1Status")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        ws.send("CVOrder|GetZ2Status")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        ws.send("CVOrder|GetRemainingTimeZ1")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        ws.send("CVOrder|GetRemainingTimeZ2")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        ws.send("CVOrder|GetTemp;0")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        ws.send("CVOrder|GetTemp;1")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
-        ws.send("CVOrder|GetDataCPTEnergy;$dateYear:$date")
-        while(!ws.isReadyRead());
-        updateField(ws.getLastMessage())
-       // delay(60000)
-        startUpdate()
->>>>>>> feature/MainActivity
+        ws.send("CVOrder|GetDataCPTEnergy;$date:$date")
     }
 
     fun updateField(data: String) {
@@ -170,8 +235,11 @@ class MainActivity : AppCompatActivity() {
                 for (value in all) {
                     daily += value.split("|").last().toInt()
                 }
-                val dailyCons = "${daily / 1000.toDouble()}kw/h"
-                val dailyCost = "${daily / 1000 * 0.1781}€"
+
+                val dailyCons = "${daily/1000.toDouble()}kw/h"
+                var dailyCost = "${daily/1000*0.1781}€"
+                dailyCost = dailyCost.removeRange(dailyCost.indexOf(".")+3,dailyCost.count()-1)
+
                 findViewById<TextView>(R.id.consDaily).text = dailyCons
                 findViewById<TextView>(R.id.dailyCost).text = dailyCost
             }

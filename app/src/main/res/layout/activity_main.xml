@@ -33,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textAlignment="center"
+                android:clickable="false"
                 android:text="@string/state"/>
 
             <TextView
@@ -41,6 +42,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textAlignment="center"
+                android:clickable="false"
                 android:text="@string/mode"/>
 
             <TextView
@@ -88,7 +90,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
+                android:textSize="19sp"
                 android:textStyle="bold"
                 android:textAlignment="center"
                 android:layout_marginTop="20dp"
@@ -97,7 +99,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
+                android:textSize="19sp"
                 android:textStyle="bold"
                 android:textAlignment="center"
                 android:text="@string/daily_cost"/>
@@ -124,6 +126,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textAlignment="center"
+                android:clickable="false"
                 android:text="@string/state"/>
 
             <TextView
@@ -132,6 +135,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textAlignment="center"
+                android:clickable="false"
                 android:text="@string/mode"/>
 
             <TextView
@@ -196,4 +200,11 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Modifier"
+        app:layout_constraintTop_toBottomOf="@+id/CVOrder"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
