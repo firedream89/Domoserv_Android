@@ -6,12 +6,9 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.Window
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -90,7 +86,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.modeZ2).setTextColor(color)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun showDialog(title: String, type: Int, selected: Int) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -124,50 +119,48 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun changeState(zone: Int, state: Int) {
-        ws.send("CVOrder|SetZ${zone}Order=$state")
+        ws.send(getString(R.string.setZoneState).replace("{zone}",zone.toString()).replace("{state}",state.toString()))
         startUpdate()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun changeMode(zone: Int, mode: Int) {
-        ws.send("CVOrder|SetZ${zone}Status=$mode")
+        ws.send(getString(R.string.setZoneMode).replace("{zone}",zone.toString()).replace("{mode}",mode.toString()))
         startUpdate()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun startUpdate() {
-        ws.send("CVOrder|GetZ1Order")
-        ws.send("CVOrder|GetZ2Order")
-        ws.send("CVOrder|GetZ1Status")
-        ws.send("CVOrder|GetZ2Status")
-        ws.send("CVOrder|GetRemainingTimeZ1")
-        ws.send("CVOrder|GetRemainingTimeZ2")
-        ws.send("CVOrder|GetTemp;0")
-        ws.send("CVOrder|GetTemp;1")
+        ws.send(getString(R.string.getZ1State))
+        ws.send(getString(R.string.getZ2State))
+        ws.send(getString(R.string.getZ1Mode))
+        ws.send(getString(R.string.getZ2Mode))
+        ws.send(getString(R.string.getZ1RemainingTime))
+        ws.send(getString(R.string.getZ2RemainingTime))
+        ws.send(getString(R.string.getIndoorTemp))
+        ws.send(getString(R.string.getOutdoorTemp))
         val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
-        ws.send("CVOrder|GetDataCPTEnergy;$date:$date")
+        ws.send(getString(R.string.getDataEnergy).replace("{date}",date).replace("{endDate}",endDate))
     }
 
     fun updateField(data: String) {
-        if (data.contains("CVOrder")) {
-            if (data.contains("GetZ1Order")) {
+        if (data.contains(getString(R.string.cvorderValue))) {
+            if (data.contains(getString(R.string.getZ1State))) {
                 findViewById<TextView>(R.id.stateZ1).text =
                     stateList[data.split("=").last().toInt()]
             }
-            if (data.contains("GetZ2Order")) {
+            if (data.contains(getString(R.string.getZ2State))) {
                 findViewById<TextView>(R.id.stateZ2).text =
                     stateList[data.split("=").last().toInt()]
             }
-            if (data.contains("GetZ1Status")) {
+            if (data.contains(getString(R.string.getZ1Mode))) {
                 findViewById<TextView>(R.id.modeZ1).text = modeList[data.split("=").last().toInt()]
             }
-            if (data.contains("GetZ2Status")) {
+            if (data.contains(getString(R.string.getZ2Mode))) {
                 findViewById<TextView>(R.id.modeZ2).text = modeList[data.split("=").last().toInt()]
             }
-            if (data.contains("GetRemainingTimeZ1")) {
+            if (data.contains(getString(R.string.getZ1RemainingTime))) {
                 val t = data.split("=").last().toInt()
                 println(t)
                 val h = t / 60 / 60
@@ -181,7 +174,7 @@ class MainActivity : AppCompatActivity() {
                 }}"
                 findViewById<TextView>(R.id.timerZ1).text = result
             }
-            if (data.contains("GetRemainingTimeZ2")) {
+            if (data.contains(getString(R.string.getZ2RemainingTime))) {
                 val t = data.split("=").last().toInt()
                 println(t)
                 val h = t / 60 / 60
@@ -195,7 +188,7 @@ class MainActivity : AppCompatActivity() {
                 }}"
                 findViewById<TextView>(R.id.timerZ2).text = result
             }
-            if (data.contains("GetTemp;0")) {
+            if (data.contains(getString(R.string.getIndoorTemp))) {
                 val temp = data.split("=").last().split(":")
                 if (temp.count() == 3) {
                     val min = temp.first() + "°C"
@@ -206,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.tempIntActual).text = actual
                 }
             }
-            if (data.contains("GetTemp;1")) {
+            if (data.contains(getString(R.string.getOutdoorTemp))) {
                 val temp = data.split("=").last().split(":")
                 if (temp.count() == 3) {
                     val min = temp.first() + "°C"
@@ -217,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.tempExtActual).text = actual
                 }
             }
-            if (data.contains("GetDataCPTEnergy")) {
+            if (data.contains(getString(R.string.getDataEnergy))) {
                 var all = data.split("=").last().split("\r").toMutableList()
                 all.removeAt(all.count() - 1)
                 var daily = 0
@@ -235,7 +228,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
