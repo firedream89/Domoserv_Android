@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center">
 
@@ -12,24 +13,17 @@
         android:text="Title"
         android:gravity="center"
         android:textStyle="bold"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/bt1"
+        android:id="@+id/submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confort"/>
-
-    <Button
-        android:id="@+id/bt2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Eco"/>
-
-    <Button
-        android:id="@+id/bt3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hors Gel"/>
+        android:text="Submit"/>
 
 </LinearLayout>

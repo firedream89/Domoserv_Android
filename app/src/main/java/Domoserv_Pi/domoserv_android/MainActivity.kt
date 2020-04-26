@@ -10,9 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.Window
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalDate
@@ -53,17 +51,21 @@ class MainActivity : AppCompatActivity() {
             setUpdateCvOrder()
         }
 
+        val btStateZ1 = this.findViewById(R.id.stateZ1) as TextView
         findViewById<TextView>(R.id.stateZ1).setOnClickListener {
-            showDialog("Zone 1 : State",0)
+            showDialog("Zone 1 : State",0, stateList.indexOf(btStateZ1.text))
         }
+        val btStateZ2 = this.findViewById(R.id.stateZ2) as TextView
         findViewById<TextView>(R.id.stateZ2).setOnClickListener {
-            showDialog("Zone 2 : State",0)
+            showDialog("Zone 2 : State",0, stateList.indexOf(btStateZ2.text))
         }
+        val btModeZ1 = this.findViewById(R.id.modeZ1) as TextView
         findViewById<TextView>(R.id.modeZ1).setOnClickListener {
-            showDialog("Zone 1 : Mode",1)
+            showDialog("Zone 1 : Mode",1, modeList.indexOf(btModeZ1.text))
         }
+        val btModeZ2 = this.findViewById(R.id.modeZ2) as TextView
         findViewById<TextView>(R.id.modeZ2).setOnClickListener {
-            showDialog("Zone 2 : Mode",1)
+            showDialog("Zone 2 : Mode",1, modeList.indexOf(btModeZ2.text))
         }
     }
 
@@ -89,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun showDialog(title: String, type: Int) {
+    private fun showDialog(title: String, type: Int, selected: Int) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
@@ -102,33 +104,20 @@ class MainActivity : AppCompatActivity() {
             false -> Zone.Z2.ordinal
         }
 
-        val bt1 = dialog.findViewById(R.id.bt1) as Button
-        val bt2 = dialog.findViewById(R.id.bt2) as Button
-        val bt3 = dialog.findViewById(R.id.bt3) as Button
+        val spinner = dialog.findViewById(R.id.select) as Spinner
+        val dataAdapter = when(type) {
+            1 -> ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, modeList)
+            else -> ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, stateList)
+        }
+        spinner.adapter = dataAdapter
+        spinner.setSelection(selected)
 
-        if(type == 1) {
-            bt1.text = "Manual"
-            bt2.text = "Automatic"
-            bt3.visibility = View.INVISIBLE
-        }
-        bt1.setOnClickListener {
+        val submit = dialog.findViewById(R.id.submit) as Button
+        submit.setOnClickListener {
+            val index = dialog.findViewById<Spinner>(R.id.select).selectedItemPosition
             when(type) {
-                0 -> changeState(zone, State.Confort.ordinal)
-                1 -> changeMode(zone, Mode.Manual.ordinal)
-            }
-            dialog.dismiss()
-        }
-        bt2.setOnClickListener {
-            when(type) {
-                0 -> changeState(zone, State.Eco.ordinal)
-                1 -> changeMode(zone, Mode.Auto.ordinal)
-            }
-            dialog.dismiss()
-        }
-        bt3.setOnClickListener {
-            when(type) {
-                0 -> changeState(zone, State.HorsGel.ordinal)
-                1 -> changeMode(zone, Mode.SAuto.ordinal)
+                1 -> changeMode(zone, index)
+                else -> changeState(zone, index)
             }
             dialog.dismiss()
         }
