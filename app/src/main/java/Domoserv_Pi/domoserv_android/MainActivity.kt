@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter
 enum class State { Confort, Eco, HorsGel }
 enum class Mode { Auto, SAuto, Manual }
 enum class Zone { unused, Z1, Z2 }
+enum class Type { State, Mode}
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +31,31 @@ class MainActivity : AppCompatActivity() {
             super.onMessage(webSocket, text)
             updateField(mDecryptedText)
             mDecryptedText = ""
+        }
+
+        fun changeState(zone: Int, state: Int) {
+            ws.send(getString(R.string.setZoneState).replace("{zone}",zone.toString()).replace("{state}",state.toString()))
+            startUpdate()
+        }
+
+        fun changeMode(zone: Int, mode: Int) {
+            ws.send(getString(R.string.setZoneMode).replace("{zone}",zone.toString()).replace("{mode}",mode.toString()))
+            startUpdate()
+        }
+
+        fun startUpdate() {
+            ws.send(getString(R.string.getZ1State))
+            ws.send(getString(R.string.getZ2State))
+            ws.send(getString(R.string.getZ1Mode))
+            ws.send(getString(R.string.getZ2Mode))
+            ws.send(getString(R.string.getZ1RemainingTime))
+            ws.send(getString(R.string.getZ2RemainingTime))
+            ws.send(getString(R.string.getIndoorTemp))
+            ws.send(getString(R.string.getOutdoorTemp))
+            val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
+            ws.send(getString(R.string.getDataEnergy).replace("{date}",date).replace("{endDate}",endDate))
         }
     }
 
@@ -48,20 +74,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         val btStateZ1 = this.findViewById(R.id.stateZ1) as TextView
-        findViewById<TextView>(R.id.stateZ1).setOnClickListener {
-            showDialog("Zone 1 : State",0, stateList.indexOf(btStateZ1.text))
-        }
+        defineSetOnClickListener(btStateZ1,Zone.Z1.ordinal, Type.State.ordinal, stateList.indexOf(btStateZ1.text))
         val btStateZ2 = this.findViewById(R.id.stateZ2) as TextView
-        findViewById<TextView>(R.id.stateZ2).setOnClickListener {
-            showDialog("Zone 2 : State",0, stateList.indexOf(btStateZ2.text))
-        }
+        defineSetOnClickListener(btStateZ2,Zone.Z2.ordinal, Type.State.ordinal, stateList.indexOf(btStateZ2.text))
         val btModeZ1 = this.findViewById(R.id.modeZ1) as TextView
-        findViewById<TextView>(R.id.modeZ1).setOnClickListener {
-            showDialog("Zone 1 : Mode",1, modeList.indexOf(btModeZ1.text))
-        }
+        defineSetOnClickListener(btModeZ1,Zone.Z1.ordinal, Type.Mode.ordinal, modeList.indexOf(btModeZ1.text))
         val btModeZ2 = this.findViewById(R.id.modeZ2) as TextView
-        findViewById<TextView>(R.id.modeZ2).setOnClickListener {
-            showDialog("Zone 2 : Mode",1, modeList.indexOf(btModeZ2.text))
+        defineSetOnClickListener(btModeZ2, Zone.Z2.ordinal, Type.Mode.ordinal, modeList.indexOf(btModeZ2.text))
+    }
+
+    private fun defineSetOnClickListener(textView: TextView, zone: Int, type: Int, selected: Int) {
+        textView.setOnClickListener {
+            var typeStr = ""
+            var typeInt = 0
+            when(type) {
+                Type.Mode.ordinal -> {
+                    typeStr = getString(R.string.mode)
+                    typeInt = 1
+                }
+                else -> getString(R.string.state)
+            }
+            showDialog("Zone $zone : $typeStr", typeInt, selected)
         }
     }
 
@@ -101,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
         val spinner = dialog.findViewById(R.id.select) as Spinner
         val dataAdapter = when(type) {
-            1 -> ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, modeList)
+            Type.Mode.ordinal -> ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, modeList)
             else -> ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, stateList)
         }
         spinner.adapter = dataAdapter
@@ -111,37 +144,12 @@ class MainActivity : AppCompatActivity() {
         submit.setOnClickListener {
             val index = dialog.findViewById<Spinner>(R.id.select).selectedItemPosition
             when(type) {
-                1 -> changeMode(zone, index)
-                else -> changeState(zone, index)
+                Type.Mode.ordinal -> ws.changeMode(zone, index)
+                else -> ws.changeState(zone, index)
             }
             dialog.dismiss()
         }
         dialog.show()
-    }
-
-    private fun changeState(zone: Int, state: Int) {
-        ws.send(getString(R.string.setZoneState).replace("{zone}",zone.toString()).replace("{state}",state.toString()))
-        startUpdate()
-    }
-
-    private fun changeMode(zone: Int, mode: Int) {
-        ws.send(getString(R.string.setZoneMode).replace("{zone}",zone.toString()).replace("{mode}",mode.toString()))
-        startUpdate()
-    }
-
-    fun startUpdate() {
-        ws.send(getString(R.string.getZ1State))
-        ws.send(getString(R.string.getZ2State))
-        ws.send(getString(R.string.getZ1Mode))
-        ws.send(getString(R.string.getZ2Mode))
-        ws.send(getString(R.string.getZ1RemainingTime))
-        ws.send(getString(R.string.getZ2RemainingTime))
-        ws.send(getString(R.string.getIndoorTemp))
-        ws.send(getString(R.string.getOutdoorTemp))
-        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
-        ws.send(getString(R.string.getDataEnergy).replace("{date}",date).replace("{endDate}",endDate))
     }
 
     fun updateField(data: String) {
@@ -161,32 +169,10 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.modeZ2).text = modeList[data.split("=").last().toInt()]
             }
             if (data.contains(getString(R.string.getZ1RemainingTime))) {
-                val t = data.split("=").last().toInt()
-                println(t)
-                val h = t / 60 / 60
-                val mn = t / 60 % 60
-                val result = "${when (h) {
-                    in 0..9 -> "0$h"
-                    else -> h
-                }}:${when (mn) {
-                    in 0..9 -> "0$mn"
-                    else -> mn
-                }}"
-                findViewById<TextView>(R.id.timerZ1).text = result
+                findViewById<TextView>(R.id.timerZ1).text = toTime(data.split("=").last().toInt())
             }
             if (data.contains(getString(R.string.getZ2RemainingTime))) {
-                val t = data.split("=").last().toInt()
-                println(t)
-                val h = t / 60 / 60
-                val mn = t / 60 % 60
-                val result = "${when (h) {
-                    in 0..9 -> "0$h"
-                    else -> h
-                }}:${when (mn) {
-                    in 0..9 -> "0$mn"
-                    else -> mn
-                }}"
-                findViewById<TextView>(R.id.timerZ2).text = result
+                findViewById<TextView>(R.id.timerZ2).text = toTime(data.split("=").last().toInt())
             }
             if (data.contains(getString(R.string.getIndoorTemp))) {
                 val temp = data.split("=").last().split(":")
@@ -228,6 +214,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun toTime(second: Int): String {
+        val h = second / 60 / 60
+        val mn = second / 60 % 60
+
+        return "${when (h) {
+            in 0..9 -> "0$h"
+            else -> h
+        }}:${when (mn) {
+            in 0..9 -> "0$mn"
+            else -> mn
+        }}"
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
@@ -257,7 +256,7 @@ class MainActivity : AppCompatActivity() {
                     startActivityForResult(intent, 0)
                 } else {
                     Toast.makeText(this, "Connected !", Toast.LENGTH_SHORT).show()
-                    startUpdate()
+                    ws.startUpdate()
                 }
             }
         }
