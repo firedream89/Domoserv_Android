@@ -156,28 +156,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun updateField(data: String) {
-        if (data.contains(getString(R.string.cvorderValue))) {
-            if (data.contains(getString(R.string.getZ1State))) {
-                findViewById<TextView>(R.id.stateZ1).text =
-                    stateList[data.split("=").last().toInt()]
-            }
-            if (data.contains(getString(R.string.getZ2State))) {
-                findViewById<TextView>(R.id.stateZ2).text =
-                    stateList[data.split("=").last().toInt()]
-            }
-            if (data.contains(getString(R.string.getZ1Mode))) {
-                findViewById<TextView>(R.id.modeZ1).text = modeList[data.split("=").last().toInt()]
-            }
-            if (data.contains(getString(R.string.getZ2Mode))) {
-                findViewById<TextView>(R.id.modeZ2).text = modeList[data.split("=").last().toInt()]
-            }
-            if (data.contains(getString(R.string.getZ1RemainingTime))) {
-                findViewById<TextView>(R.id.timerZ1).text = toTime(data.split("=").last().toInt())
-            }
-            if (data.contains(getString(R.string.getZ2RemainingTime))) {
-                findViewById<TextView>(R.id.timerZ2).text = toTime(data.split("=").last().toInt())
-            }
-            if (data.contains(getString(R.string.getIndoorTemp))) {
+        when(data.split("=").first()) {
+            getString(R.string.getZ1State) -> findViewById<TextView>(R.id.stateZ1).text = stateList[data.split("=").last().toInt()]
+            getString(R.string.getZ2State) -> findViewById<TextView>(R.id.stateZ2).text = stateList[data.split("=").last().toInt()]
+            getString(R.string.getZ1Mode) -> findViewById<TextView>(R.id.modeZ1).text = modeList[data.split("=").last().toInt()]
+            getString(R.string.getZ2Mode) -> findViewById<TextView>(R.id.modeZ2).text = modeList[data.split("=").last().toInt()]
+            getString(R.string.getZ1RemainingTime) -> findViewById<TextView>(R.id.timerZ1).text = toTime(data.split("=").last().toInt())
+            getString(R.string.getZ2RemainingTime) -> findViewById<TextView>(R.id.timerZ2).text = toTime(data.split("=").last().toInt())
+            getString(R.string.getIndoorTemp) -> {
                 val temp = data.split("=").last().split(":")
                 if (temp.count() == 3) {
                     val min = temp.first() + "°C"
@@ -188,7 +174,7 @@ class MainActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.tempIntActual).text = actual
                 }
             }
-            if (data.contains(getString(R.string.getOutdoorTemp))) {
+            getString(R.string.getOutdoorTemp) -> {
                 val temp = data.split("=").last().split(":")
                 if (temp.count() == 3) {
                     val min = temp.first() + "°C"
@@ -199,8 +185,8 @@ class MainActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.tempExtActual).text = actual
                 }
             }
-            if (data.contains(getString(R.string.getDataEnergy))) {
-                var all = data.split("=").last().split("\r").toMutableList()
+            getString(R.string.getDataEnergy) -> {
+                val all = data.split("=").last().split("\r").toMutableList()
                 all.removeAt(all.count() - 1)
                 var daily = 0
                 for (value in all) {
