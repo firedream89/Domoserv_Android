@@ -23,8 +23,8 @@ class MainActivity : AppCompatActivity() {
 
     private var ws = WebSocket()
 
-    private val stateList = listOf("Confort", "Eco", "HorsGel")
-    private val modeList = listOf("Auto", "SemiAuto", "Manual")
+    private var stateList = List(3) {""}
+    private var modeList = List(3) {""}
 
     inner class WebSocket() : WebSock() {
         override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
@@ -62,6 +62,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        stateList = listOf(getString(R.string.comfort),getString(R.string.eco),getString(R.string.frostFree))
+        modeList = listOf(getString(R.string.auto), getString(R.string.semiAuto), getString(R.string.manual))
 
         val intent = Intent(this, ConnectionActivity::class.java)
 
@@ -255,7 +258,7 @@ class MainActivity : AppCompatActivity() {
                     intent.putExtra("FirstAttempt", false)
                     startActivityForResult(intent, 0)
                 } else {
-                    Toast.makeText(this, "Connected !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.connected), Toast.LENGTH_SHORT).show()
                     ws.startUpdate()
                 }
             }

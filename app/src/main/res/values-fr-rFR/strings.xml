@@ -26,4 +26,11 @@
     <string name="euro">0€</string>
     <string name="zone_1">Zone 1</string>
     <string name="zone_2">Zone 2</string>
+    <string name="comfort">Confort</string>
+    <string name="eco">Eco</string>
+    <string name="frostFree">Hors Gel</string>
+    <string name="auto">Auto</string>
+    <string name="semiAuto">Semi-Auto</string>
+    <string name="manual">Manuel</string>
+    <string name="connected">Connecté</string>
 </resources>

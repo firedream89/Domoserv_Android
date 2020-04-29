@@ -25,4 +25,11 @@
     <string name="tempExt">Outdoor temperature</string>
     <string name="kwh">0kw/h</string>
     <string name="euro">0€</string>
+    <string name="comfort">Comfort</string>
+    <string name="eco">Eco</string>
+    <string name="frostFree">Frost Free</string>
+    <string name="auto">Auto</string>
+    <string name="semiAuto">Semi-Auto</string>
+    <string name="manual">Manual</string>
+    <string name="connected">Connected</string>
 </resources>
