@@ -1,210 +1,261 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity"
-    android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:orientation="vertical"
+    android:baselineAligned="false"
+    android:background="#393535">
 
     <LinearLayout
-        android:id="@+id/CVOrder"
+        android:id="@+id/btnTemp"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1">
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/textviewbutton">
 
-            <TextView
+        <TextView
+            style="@style/titleTextView"
+            android:text="@string/temperature"/>
+
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            android:textStyle="bold"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/tempInt"/>
+
+                <TextView
+                    android:id="@+id/tempIntActual"
+                    style="@style/textView"
+                    android:text="@string/nullTemp"/>
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/degreCelsius"/>
+
+                <TextView
+                   style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/tempExt" />
+
+                <TextView
+                    android:id="@+id/tempExtActual"
+                    style="@style/textView"
+                    android:text="@string/nullTemp" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/degreCelsius"/>
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btnState"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/textviewbutton">
+
+        <TextView
+            style="@style/titleTextView"
+            android:text="@string/state"/>
+
+        <TextView
+            style="@style/subTitleTextView"
             android:text="@string/zone_1"/>
 
-            <TextView
-                android:id="@+id/stateZ1"
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:clickable="false"
-                android:text="@string/state"/>
+                android:gravity="center">
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/stateValue" />
+
+                <TextView
+                    android:id="@+id/stateZ1"
+                    style="@style/textView"
+                    android:text="@string/state"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/modeValue" />
+
+                <TextView
+                    android:id="@+id/modeZ1"
+                    style="@style/textView"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/mode" />
+            </TableRow>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
 
             <TextView
-                android:id="@+id/modeZ1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:clickable="false"
-                android:text="@string/mode"/>
+                style="@style/textView"
+                android:layout_marginEnd="5dp"
+                android:text="@string/remaining_timeValue" />
 
             <TextView
                 android:id="@+id/timerZ1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/remaining_time"/>
+                style="@style/textView"
+                android:text="@string/nullTime" />
+            </TableRow>
+        </TableLayout>
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="19sp"
-                android:textAlignment="center"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"
-                android:text="@string/tempInt"/>
-
-            <TextView
-                android:id="@+id/tempIntMin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/min"/>
-
-            <TextView
-                android:id="@+id/tempIntMax"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/max"/>
-
-            <TextView
-                android:id="@+id/tempIntActual"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/actual"/>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="19sp"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:layout_marginTop="20dp"
-                android:text="@string/daily_consumption"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="19sp"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:text="@string/daily_cost"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:textStyle="bold"
+                style="@style/subTitleTextView"
                 android:text="@string/zone_2"/>
 
-            <TextView
-                android:id="@+id/stateZ2"
+            <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:clickable="false"
-                android:text="@string/state"/>
+                android:gravity="center">
 
-            <TextView
-                android:id="@+id/modeZ2"
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/stateValue" />
+
+                <TextView
+                    android:id="@+id/stateZ2"
+                    style="@style/textView"
+                    android:text="@string/state"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                   style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/modeValue" />
+
+                <TextView
+                    android:id="@+id/modeZ2"
+                    style="@style/textView"
+                    android:text="@string/mode" />
+            </TableRow>
+        </TableLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:clickable="false"
-                android:text="@string/mode"/>
+                android:gravity="center">
 
-            <TextView
-                android:id="@+id/timerZ2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/remaining_time"/>
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="3dp"
+                    android:text="@string/remaining_timeValue" />
 
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="19sp"
-                android:textAlignment="center"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"
-                android:text="@string/tempExt"/>
-
-            <TextView
-                android:id="@+id/tempExtMin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/min"/>
-
-            <TextView
-                android:id="@+id/tempExtMax"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/max"/>
-
-            <TextView
-                android:id="@+id/tempExtActual"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/actual"/>
-
-
-            <TextView
-                android:id="@+id/consDaily"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:layout_marginTop="20dp"
-                android:text="@string/kwh"/>
-
-            <TextView
-                android:id="@+id/dailyCost"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:text="@string/euro"/>
-
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/timerZ2"
+                    style="@style/textView"
+                    android:text="@string/nullTime" />
+            </TableRow>
+        </TableLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/updateButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Modifier"
-        app:layout_constraintTop_toBottomOf="@+id/CVOrder"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/textviewbutton">
+        <TextView
+            style="@style/titleTextView"
+            android:text="@string/consumption"/>
+
+        <TextView
+            style="@style/subTitleTextView"
+            android:text="@string/today"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/dailyCons"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/kwh"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                    android:id="@+id/dailyCost"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/euro" />
+            </TableRow>
+
+            <TextView
+                style="@style/subTitleTextView"
+                android:text="@string/this_year"/>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/yearCons"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/kwh"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                    android:id="@+id/yearCost"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/euro" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</LinearLayout>

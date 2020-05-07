@@ -2,23 +2,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="#393535">
 
     <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Title"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textSize="20sp" />
+        style="@style/titleTextView"
+        android:text="@string/set_heater"/>
+
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/zone_1"
+        android:layout_width="match_parent"/>
 
     <Spinner
-        android:id="@+id/select"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:id="@+id/selectStateZ1"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/selectModeZ1"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
+
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/zone_2"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/selectStateZ2"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/selectModeZ2"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
 
     <Button
         android:id="@+id/submit"

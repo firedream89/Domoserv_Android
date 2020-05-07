@@ -5,19 +5,17 @@ import Domoserv_Pi.domoserv_android.Common.WebSock
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Window
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
-
-enum class State { Confort, Eco, HorsGel }
-enum class Mode { Auto, SAuto, Manual }
 enum class Zone { unused, Z1, Z2 }
-enum class Type { State, Mode}
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,22 +23,23 @@ class MainActivity : AppCompatActivity() {
 
     private var stateList = List(3) {""}
     private var modeList = List(3) {""}
+    private var indoorTemp = List(3) {""}
+    private var outdoorTemp = List(3) {""}
 
     inner class WebSocket() : WebSock() {
         override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
             super.onMessage(webSocket, text)
-            updateField(mDecryptedText)
+            val result = mDecryptedText
+            Handler(Looper.getMainLooper()).post(Runnable { updateField(result) })
             mDecryptedText = ""
         }
 
         fun changeState(zone: Int, state: Int) {
             ws.send(getString(R.string.setZoneState).replace("{zone}",zone.toString()).replace("{state}",state.toString()))
-            startUpdate()
         }
 
         fun changeMode(zone: Int, mode: Int) {
             ws.send(getString(R.string.setZoneMode).replace("{zone}",zone.toString()).replace("{mode}",mode.toString()))
-            startUpdate()
         }
 
         fun startUpdate() {
@@ -72,90 +71,80 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("FirstAttempt",true)
         startActivityForResult(intent,0)
 
-        findViewById<Button>(R.id.updateButton).setOnClickListener {
-            setUpdateCvOrder()
+        //define state click listener
+        val stateLayout = findViewById<LinearLayout>(R.id.btnState)
+        stateLayout.setOnClickListener {
+            showHeaterDialog()
         }
-
-        val btStateZ1 = this.findViewById(R.id.stateZ1) as TextView
-        defineSetOnClickListener(btStateZ1,Zone.Z1.ordinal, Type.State.ordinal, stateList.indexOf(btStateZ1.text))
-        val btStateZ2 = this.findViewById(R.id.stateZ2) as TextView
-        defineSetOnClickListener(btStateZ2,Zone.Z2.ordinal, Type.State.ordinal, stateList.indexOf(btStateZ2.text))
-        val btModeZ1 = this.findViewById(R.id.modeZ1) as TextView
-        defineSetOnClickListener(btModeZ1,Zone.Z1.ordinal, Type.Mode.ordinal, modeList.indexOf(btModeZ1.text))
-        val btModeZ2 = this.findViewById(R.id.modeZ2) as TextView
-        defineSetOnClickListener(btModeZ2, Zone.Z2.ordinal, Type.Mode.ordinal, modeList.indexOf(btModeZ2.text))
-    }
-
-    private fun defineSetOnClickListener(textView: TextView, zone: Int, type: Int, selected: Int) {
-        textView.setOnClickListener {
-            var typeStr = ""
-            var typeInt = 0
-            when(type) {
-                Type.Mode.ordinal -> {
-                    typeStr = getString(R.string.mode)
-                    typeInt = 1
-                }
-                else -> getString(R.string.state)
-            }
-            showDialog("Zone $zone : $typeStr", typeInt, selected)
+        val tempLayout = findViewById<LinearLayout>(R.id.btnTemp)
+        tempLayout.setOnClickListener {
+            showTemperatureDialog()
         }
     }
 
-    private fun setUpdateCvOrder() {
-        var clickable = false
-        val stateZ1 = findViewById<TextView>(R.id.stateZ1)
-        clickable = when(stateZ1.isClickable) {
-            true -> false
-            false -> true
-        }
-        val color = when(clickable) {
-            true -> Color.BLUE
-            false -> Color.BLACK
-        }
-        stateZ1.isClickable = clickable
-        findViewById<TextView>(R.id.stateZ2).isClickable = clickable
-        findViewById<TextView>(R.id.modeZ1).isClickable = clickable
-        findViewById<TextView>(R.id.modeZ2).isClickable = clickable
-        stateZ1.setTextColor(color)
-        findViewById<TextView>(R.id.stateZ2).setTextColor(color)
-        findViewById<TextView>(R.id.modeZ1).setTextColor(color)
-        findViewById<TextView>(R.id.modeZ2).setTextColor(color)
-    }
-
-    private fun showDialog(title: String, type: Int, selected: Int) {
+    private fun showHeaterDialog() {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.set_state_mode_dialog)
-        val body = dialog.findViewById(R.id.title) as TextView
-        body.text = title
 
-        val zone = when(title.contains("1")) {
-            true -> Zone.Z1.ordinal
-            false -> Zone.Z2.ordinal
-        }
+        val stateZ1 = dialog.findViewById(R.id.selectStateZ1) as Spinner
+        val stateZ2 = dialog.findViewById(R.id.selectStateZ2) as Spinner
+        val modeZ1 = dialog.findViewById(R.id.selectModeZ1) as Spinner
+        val modeZ2 = dialog.findViewById(R.id.selectModeZ2) as Spinner
 
-        val spinner = dialog.findViewById(R.id.select) as Spinner
-        val dataAdapter = when(type) {
-            Type.Mode.ordinal -> ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, modeList)
-            else -> ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, stateList)
-        }
-        spinner.adapter = dataAdapter
-        spinner.setSelection(selected)
+        var dataAdapter = ArrayAdapter(this, R.layout.spinner, stateList)
+        stateZ1.adapter = dataAdapter
+        stateZ2.adapter = dataAdapter
+
+        dataAdapter = ArrayAdapter<String>(this, R.layout.spinner, modeList)
+        modeZ1.adapter = dataAdapter
+        modeZ2.adapter = dataAdapter
+
+        stateZ1.setSelection(stateList.indexOf(findViewById<TextView>(R.id.stateZ1).text))
+        stateZ2.setSelection(stateList.indexOf(findViewById<TextView>(R.id.stateZ2).text))
+        modeZ1.setSelection(modeList.indexOf(findViewById<TextView>(R.id.modeZ1).text))
+        modeZ2.setSelection(modeList.indexOf(findViewById<TextView>(R.id.modeZ2).text))
 
         val submit = dialog.findViewById(R.id.submit) as Button
         submit.setOnClickListener {
-            val index = dialog.findViewById<Spinner>(R.id.select).selectedItemPosition
-            when(type) {
-                Type.Mode.ordinal -> ws.changeMode(zone, index)
-                else -> ws.changeState(zone, index)
+            if(stateZ1.selectedItemPosition != stateList.indexOf(findViewById<TextView>(R.id.stateZ1).text)) {
+                ws.changeState(Zone.Z1.ordinal,stateZ1.selectedItemPosition)
             }
+            if(stateZ2.selectedItemPosition != stateList.indexOf(findViewById<TextView>(R.id.stateZ2).text)) {
+                ws.changeState(Zone.Z2.ordinal,stateZ2.selectedItemPosition)
+            }
+            if(modeZ1.selectedItemPosition != modeList.indexOf(findViewById<TextView>(R.id.modeZ1).text)) {
+                ws.changeMode(Zone.Z1.ordinal,modeZ1.selectedItemPosition)
+            }
+            if(modeZ2.selectedItemPosition != modeList.indexOf(findViewById<TextView>(R.id.modeZ2).text)) {
+                ws.changeMode(Zone.Z2.ordinal,modeZ2.selectedItemPosition)
+            }
+            ws.startUpdate()
             dialog.dismiss()
         }
         dialog.show()
     }
 
+    private fun showTemperatureDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.temperature_main_dialog)
+
+        dialog.findViewById<TextView>(R.id.tempIntMin).text = indoorTemp[0]
+        dialog.findViewById<TextView>(R.id.tempIntMax).text = indoorTemp[1]
+        dialog.findViewById<TextView>(R.id.tempIntActual).text = indoorTemp[2]
+
+        dialog.findViewById<TextView>(R.id.tempExtMin).text = outdoorTemp[0]
+        dialog.findViewById<TextView>(R.id.tempExtMax).text = outdoorTemp[1]
+        dialog.findViewById<TextView>(R.id.tempExtActual).text = outdoorTemp[2]
+
+        dialog.show()
+    }
+
     fun updateField(data: String) {
+        println(data)
         when(data.split("=").first()) {
             getString(R.string.getZ1State) -> findViewById<TextView>(R.id.stateZ1).text = stateList[data.split("=").last().toInt()]
             getString(R.string.getZ2State) -> findViewById<TextView>(R.id.stateZ2).text = stateList[data.split("=").last().toInt()]
@@ -166,26 +155,24 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.getIndoorTemp) -> {
                 val temp = data.split("=").last().split(":")
                 if (temp.count() == 3) {
-                    val min = temp.first() + "°C"
-                    val max = temp[1] + "°C"
-                    val actual = temp.last() + "°C"
-                    findViewById<TextView>(R.id.tempIntMin).text = min
-                    findViewById<TextView>(R.id.tempIntMax).text = max
+                    val min = temp.first()
+                    val max = temp[1]
+                    val actual = temp.last()
+                    indoorTemp = listOf(min, max, actual)
                     findViewById<TextView>(R.id.tempIntActual).text = actual
                 }
             }
             getString(R.string.getOutdoorTemp) -> {
                 val temp = data.split("=").last().split(":")
                 if (temp.count() == 3) {
-                    val min = temp.first() + "°C"
-                    val max = temp[1] + "°C"
-                    val actual = temp.last() + "°C"
-                    findViewById<TextView>(R.id.tempExtMin).text = min
-                    findViewById<TextView>(R.id.tempExtMax).text = max
+                    val min = temp.first()
+                    val max = temp[1]
+                    val actual = temp.last()
+                    outdoorTemp = listOf(min, max, actual)
                     findViewById<TextView>(R.id.tempExtActual).text = actual
                 }
             }
-            getString(R.string.getDataEnergy) -> {
+            getString(R.string.getDataEnergy).split(";").first() -> {
                 val all = data.split("=").last().split("\r").toMutableList()
                 all.removeAt(all.count() - 1)
                 var daily = 0
@@ -193,12 +180,10 @@ class MainActivity : AppCompatActivity() {
                     daily += value.split("|").last().toInt()
                 }
 
-                val dailyCons = "${daily/1000.toDouble()}kw/h"
-                var dailyCost = "${daily/1000*0.1781}€"
-                dailyCost = dailyCost.removeRange(dailyCost.indexOf(".")+3,dailyCost.count()-1)
-
-                findViewById<TextView>(R.id.consDaily).text = dailyCons
-                findViewById<TextView>(R.id.dailyCost).text = dailyCost
+                val dailyCons = (daily / 10.toDouble()).roundToInt() / 100.toDouble()
+                val dailyCost = (daily / 10 * 0.1781).roundToInt() / 100.toDouble()
+                findViewById<TextView>(R.id.dailyCons).text = dailyCons.toString()
+                findViewById<TextView>(R.id.dailyCost).text = dailyCost.toString()
             }
         }
     }
