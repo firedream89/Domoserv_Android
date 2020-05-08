@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var modeList = List(3) {""}
     private var indoorTemp = List(3) {""}
     private var outdoorTemp = List(3) {""}
+    private var frostFree = 0
 
     inner class WebSocket() : WebSock() {
         override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
@@ -42,6 +43,10 @@ class MainActivity : AppCompatActivity() {
             ws.send(getString(R.string.setZoneMode).replace("{zone}",zone.toString()).replace("{mode}",mode.toString()))
         }
 
+        fun startFrostFree(day: Int) {
+            ws.send(getString(R.string.setFrostFree).replace("{day}",day.toString()))
+        }
+
         fun startUpdate() {
             ws.send(getString(R.string.getZ1State))
             ws.send(getString(R.string.getZ2State))
@@ -55,6 +60,7 @@ class MainActivity : AppCompatActivity() {
             val endDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             val dateYear = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-01-01"
             ws.send(getString(R.string.getDataEnergy).replace("{date}",date).replace("{endDate}",endDate))
+            ws.send(getString(R.string.getFrostFree))
         }
     }
 
@@ -92,12 +98,13 @@ class MainActivity : AppCompatActivity() {
         val stateZ2 = dialog.findViewById(R.id.selectStateZ2) as Spinner
         val modeZ1 = dialog.findViewById(R.id.selectModeZ1) as Spinner
         val modeZ2 = dialog.findViewById(R.id.selectModeZ2) as Spinner
+        val frostFreeEdit = dialog.findViewById(R.id.inFrostFree) as EditText
 
         var dataAdapter = ArrayAdapter(this, R.layout.spinner, stateList)
         stateZ1.adapter = dataAdapter
         stateZ2.adapter = dataAdapter
 
-        dataAdapter = ArrayAdapter<String>(this, R.layout.spinner, modeList)
+        dataAdapter = ArrayAdapter(this, R.layout.spinner, modeList)
         modeZ1.adapter = dataAdapter
         modeZ2.adapter = dataAdapter
 
@@ -105,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         stateZ2.setSelection(stateList.indexOf(findViewById<TextView>(R.id.stateZ2).text))
         modeZ1.setSelection(modeList.indexOf(findViewById<TextView>(R.id.modeZ1).text))
         modeZ2.setSelection(modeList.indexOf(findViewById<TextView>(R.id.modeZ2).text))
+        frostFreeEdit.hint = (frostFree / 60 / 60 / 24).toString()
 
         val submit = dialog.findViewById(R.id.submit) as Button
         submit.setOnClickListener {
@@ -119,6 +127,11 @@ class MainActivity : AppCompatActivity() {
             }
             if(modeZ2.selectedItemPosition != modeList.indexOf(findViewById<TextView>(R.id.modeZ2).text)) {
                 ws.changeMode(Zone.Z2.ordinal,modeZ2.selectedItemPosition)
+            }
+            if(frostFreeEdit.text.isNotEmpty()) {
+                if(frostFreeEdit.text.toString().toInt() in 0..30) {
+                    ws.startFrostFree(frostFreeEdit.text.toString().toInt())
+                }
             }
             ws.startUpdate()
             dialog.dismiss()
@@ -185,6 +198,7 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.dailyCons).text = dailyCons.toString()
                 findViewById<TextView>(R.id.dailyCost).text = dailyCost.toString()
             }
+            getString(R.string.getFrostFree) -> frostFree = data.split("=").last().toInt()
         }
     }
 

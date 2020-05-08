@@ -43,4 +43,8 @@
     <string name="this_year">This year</string>
     <string name="degreCelsius" translatable="false">°C</string>
     <string name="set_heater">Set heater</string>
+    <string name="_0_to_30">0 to 30</string>
+    <string name="Send">Send</string>
+    <string name="setFrostFree" translatable="false">CVOrder|ABS={day}</string>
+    <string name="getFrostFree" translatable="false">CVOrder|GetABS</string>
 </resources>

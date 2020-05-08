@@ -40,10 +40,23 @@
         style="@style/textView"
         android:layout_width="match_parent"/>
 
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/frostFree"
+        android:layout_width="match_parent"/>
+
+    <EditText
+        android:id="@+id/inFrostFree"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:hint="@string/_0_to_30"
+    android:autofillHints="@string/_0_to_30"/>
+
     <Button
         android:id="@+id/submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Submit"/>
+        android:text="@string/Send"/>
 
 </LinearLayout>
