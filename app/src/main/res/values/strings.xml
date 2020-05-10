@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Domoserv_Android</string>
+    <string name="app_name">Domoserv Android</string>
     <string name="password">Password :</string>
     <string name="port">Port :</string>
     <string name="ip">Ip :</string>
@@ -47,4 +47,5 @@
     <string name="Send">Send</string>
     <string name="setFrostFree" translatable="false">CVOrder|ABS={day}</string>
     <string name="getFrostFree" translatable="false">CVOrder|GetABS</string>
+    <string name="action_settings">Settings</string>
 </resources>

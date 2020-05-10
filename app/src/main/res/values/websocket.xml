@@ -9,7 +9,7 @@
     <string name="getZ2RemainingTime" translatable="false">CVOrder|GetRemainingTimeZ2</string>
     <string name="getIndoorTemp" translatable="false">CVOrder|GetTemp;0</string>
     <string name="getOutdoorTemp" translatable="false">CVOrder|GetTemp;1</string>
-    <string name="getDataEnergy" translatable="false">CVOrder|GetDataCPTEnergy;{date}:{endDate}</string>
+    <string name="getDataEnergy" translatable="false">CVOrder|GetDataCPTEnergy;;{date}:{endDate}</string>
     <string name="setZoneState" translatable="false">CVOrder|SetZ{zone}Order={state}</string>
     <string name="setZoneMode" translatable="false">CVOrder|SetZ{zone}Status={mode}</string>
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Domoserv_Android</string>
+    <string name="app_name">Domoserv Android</string>
     <string name="password">Mot de passe :</string>
     <string name="port">Port :</string>
     <string name="ip">Ip :</string>
@@ -42,4 +42,5 @@
     <string name="set_heater">Réglage chauffage</string>
     <string name="_0_to_30">0 à 30</string>
     <string name="Send">Envoyé</string>
+    <string name="action_settings">Configuration</string>
 </resources>
