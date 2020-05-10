@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#393535">
+
+
+    <TextView
+        style="@style/titleTextView"
+        android:text="@string/temperature"/>
+
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/tempInt"/>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/textView"
+            android:layout_marginEnd="10dp"
+            android:text="@string/min"/>
+
+        <TextView
+            android:id="@+id/tempIntMin"
+            style="@style/textView"
+            android:text="@string/min"/>
+
+        <TextView
+            style="@style/textView"
+            android:text="@string/degreCelsius"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/textView"
+            android:layout_marginEnd="10dp"
+            android:text="@string/max"/>
+
+        <TextView
+            android:id="@+id/tempIntMax"
+            style="@style/textView"
+            android:text="@string/max"/>
+
+        <TextView
+            style="@style/textView"
+            android:text="@string/degreCelsius"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/textView"
+            android:text="@string/actual"/>
+
+        <TextView
+            android:id="@+id/tempIntActual"
+            style="@style/textView"
+            android:text="@string/actual"/>
+
+        <TextView
+            style="@style/textView"
+            android:text="@string/degreCelsius"/>
+    </TableRow>
+
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/tempExt"/>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/textView"
+            android:layout_marginEnd="10dp"
+            android:text="@string/min"/>
+
+        <TextView
+            android:id="@+id/tempExtMin"
+            style="@style/textView"
+            android:text="@string/min"/>
+
+        <TextView
+            style="@style/textView"
+            android:text="@string/degreCelsius"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp">
+
+    <TextView
+        style="@style/textView"
+        android:layout_marginEnd="10dp"
+        android:text="@string/max"/>
+
+    <TextView
+        android:id="@+id/tempExtMax"
+        style="@style/textView"
+        android:text="@string/max"/>
+
+        <TextView
+            style="@style/textView"
+            android:text="@string/degreCelsius"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/textView"
+            android:layout_marginEnd="10dp"
+            android:text="@string/actual"/>
+
+        <TextView
+            android:id="@+id/tempExtActual"
+            style="@style/textView"
+            android:text="@string/actual"/>
+
+        <TextView
+            style="@style/textView"
+            android:text="@string/degreCelsius"/>
+    </TableRow>
+</TableLayout>

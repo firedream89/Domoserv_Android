@@ -50,8 +50,8 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
     }
 
     //Suppression de la clé de cryptage "name"
-    fun Remove_Encrypted_Key(name: String): Boolean {
-        for (i in 0 until mEncryptedKeys.count()) {
+            fun Remove_Encrypted_Key(name: String): Boolean {
+                for (i in 0 until mEncryptedKeys.count()) {
             if (mEncryptedKeys[i].contains(name)) {
                 mEncryptedKeys.removeAt(i)
                 return true
@@ -157,6 +157,7 @@ class CryptoFire(private var keySize: Int, private var codeSize: Int, private va
     //Génération d'une nouvelle clé suivant le mot de passe et la clé original
     //Clé privé non transmise, sera utilisé pour crypter/décrypter les données
     //Clé généré par le client et le serveur
+    @ExperimentalUnsignedTypes
     private fun Encrypt_Key(password: String): String {
         //le mot de passe  doit être minimum de taille identique au "codeSize"
         if (password.count() < mCodeSize) {

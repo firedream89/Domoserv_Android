@@ -1,12 +1,51 @@
 <resources>
-    <string name="app_name">Domoserv_Android</string>
+    <string name="app_name">Domoserv Android</string>
     <string name="password">Password :</string>
     <string name="port">Port :</string>
     <string name="ip">Ip :</string>
     <string name="connect">Connect</string>
-    <string name="connexion">Connexion</string>
+    <string name="connexion">Connection</string>
     <string name="connexionIpError">The Ip field must not be empty</string>
     <string name="connexionPortError">The Port must be between 49152 and 65535</string>
     <string name="connexionPasswordError">The Password field must not be empty !</string>
     <string name="save_the_identifiers">Save the identifiers</string>
+    <string name="wsPasswordError">Password Error</string>
+    <string name="wsDataError">Data error, wrong password ?</string>
+    <string name="zone_1">Zone 1</string>
+    <string name="zone_2">Zone 2</string>
+    <string name="state">Heater</string>
+    <string name="mode">Mode</string>
+    <string name="remaining_time">Remaining time</string>
+    <string name="tempInt">Indoor</string>
+    <string name="min">Min</string>
+    <string name="max">Max</string>
+    <string name="actual">Actual</string>
+    <string name="today">Today</string>
+    <string name="daily_cost">Daily cost</string>
+    <string name="tempExt">Outdoor</string>
+    <string name="kwh">kw/h</string>
+    <string name="euro">€</string>
+    <string name="comfort">Comfort</string>
+    <string name="eco">Eco</string>
+    <string name="frostFree">Frost Free</string>
+    <string name="auto">Auto</string>
+    <string name="semiAuto">Semi-Auto</string>
+    <string name="manual">Manual</string>
+    <string name="connected">Connected</string>
+    <string name="temperature">Temperature</string>
+    <string name="stateValue">State :</string>
+    <string name="modeValue">Mode :</string>
+    <string name="remaining_timeValue">Remaining time :</string>
+    <string name="nullTime" translatable="false">00:00</string>
+    <string name="nullTemp" translatable="false">00.00</string>
+    <string name="consumption">Consumption</string>
+    <string name="nullZero" translatable="false">0</string>
+    <string name="this_year">This year</string>
+    <string name="degreCelsius" translatable="false">°C</string>
+    <string name="set_heater">Set heater</string>
+    <string name="_0_to_30">0 to 30</string>
+    <string name="Send">Send</string>
+    <string name="setFrostFree" translatable="false">CVOrder|ABS={day}</string>
+    <string name="getFrostFree" translatable="false">CVOrder|GetABS</string>
+    <string name="action_settings">Settings</string>
 </resources>

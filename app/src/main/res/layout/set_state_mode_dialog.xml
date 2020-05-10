@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#393535">
+
+    <TextView
+        style="@style/titleTextView"
+        android:text="@string/set_heater"/>
+
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/zone_1"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/selectStateZ1"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/selectModeZ1"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
+
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/zone_2"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/selectStateZ2"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
+
+    <Spinner
+        android:id="@+id/selectModeZ2"
+        style="@style/textView"
+        android:layout_width="match_parent"/>
+
+    <TextView
+        style="@style/subTitleTextView"
+        android:text="@string/frostFree"
+        android:layout_width="match_parent"/>
+
+    <EditText
+        android:id="@+id/inFrostFree"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:hint="@string/_0_to_30"
+    android:autofillHints="@string/_0_to_30"/>
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Send"/>
+
+</LinearLayout>

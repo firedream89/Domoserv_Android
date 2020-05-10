@@ -1,10 +1,265 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:baselineAligned="false"
+    android:background="#393535">
 
+    <LinearLayout
+        android:id="@+id/btnTemp"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/textviewbutton"
+        android:layout_weight="1">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            style="@style/titleTextView"
+            android:text="@string/temperature"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/tempInt"/>
+
+                <TextView
+                    android:id="@+id/tempIntActual"
+                    style="@style/textView"
+                    android:text="@string/nullTemp"/>
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/degreCelsius"/>
+
+                <TextView
+                   style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/tempExt" />
+
+                <TextView
+                    android:id="@+id/tempExtActual"
+                    style="@style/textView"
+                    android:text="@string/nullTemp" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/degreCelsius"/>
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btnState"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/textviewbutton"
+        android:layout_weight="3">
+
+        <TextView
+            style="@style/titleTextView"
+            android:text="@string/state"/>
+
+        <TextView
+            style="@style/subTitleTextView"
+            android:text="@string/zone_1"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/stateValue" />
+
+                <TextView
+                    android:id="@+id/stateZ1"
+                    style="@style/textView"
+                    android:text="@string/state"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/modeValue" />
+
+                <TextView
+                    android:id="@+id/modeZ1"
+                    style="@style/textView"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/mode" />
+            </TableRow>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+            <TextView
+                style="@style/textView"
+                android:layout_marginEnd="5dp"
+                android:text="@string/remaining_timeValue" />
+
+            <TextView
+                android:id="@+id/timerZ1"
+                style="@style/textView"
+                android:text="@string/nullTime" />
+            </TableRow>
+        </TableLayout>
+
+            <TextView
+                style="@style/subTitleTextView"
+                android:text="@string/zone_2"/>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/stateValue" />
+
+                <TextView
+                    android:id="@+id/stateZ2"
+                    style="@style/textView"
+                    android:text="@string/state"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                   style="@style/textView"
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/modeValue" />
+
+                <TextView
+                    android:id="@+id/modeZ2"
+                    style="@style/textView"
+                    android:text="@string/mode" />
+            </TableRow>
+        </TableLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <TextView
+                    style="@style/textView"
+                    android:layout_marginEnd="3dp"
+                    android:text="@string/remaining_timeValue" />
+
+                <TextView
+                    android:id="@+id/timerZ2"
+                    style="@style/textView"
+                    android:text="@string/nullTime" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/textviewbutton"
+        android:layout_weight="2">
+        <TextView
+            style="@style/titleTextView"
+            android:text="@string/consumption"/>
+
+        <TextView
+            style="@style/subTitleTextView"
+            android:text="@string/today"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/dailyCons"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/kwh"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                    android:id="@+id/dailyCost"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/euro" />
+            </TableRow>
+
+            <TextView
+                style="@style/subTitleTextView"
+                android:text="@string/this_year"/>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/yearCons"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/kwh"
+                    android:layout_marginEnd="20dp"/>
+
+                <TextView
+                    android:id="@+id/yearCost"
+                    style="@style/textView"
+                    android:text="@string/nullZero" />
+
+                <TextView
+                    style="@style/textView"
+                    android:text="@string/euro" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cvorderValue" translatable="false">CVOrder|</string>
+    <string name="getZ1State" translatable="false">CVOrder|GetZ1Order</string>
+    <string name="getZ2State" translatable="false">CVOrder|GetZ2Order</string>
+    <string name="getZ1Mode" translatable="false">CVOrder|GetZ1Status</string>
+    <string name="getZ2Mode" translatable="false">CVOrder|GetZ2Status</string>
+    <string name="getZ1RemainingTime" translatable="false">CVOrder|GetRemainingTimeZ1</string>
+    <string name="getZ2RemainingTime" translatable="false">CVOrder|GetRemainingTimeZ2</string>
+    <string name="getIndoorTemp" translatable="false">CVOrder|GetTemp;0</string>
+    <string name="getOutdoorTemp" translatable="false">CVOrder|GetTemp;1</string>
+    <string name="getDataEnergy" translatable="false">CVOrder|GetDataCPTEnergy;;{date}:{endDate}</string>
+    <string name="setZoneState" translatable="false">CVOrder|SetZ{zone}Order={state}</string>
+    <string name="setZoneMode" translatable="false">CVOrder|SetZ{zone}Status={mode}</string>
+</resources>

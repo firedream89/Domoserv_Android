@@ -12,7 +12,7 @@ open class WebSock : WebSocketListener() {
     private val mName = "Android"
     private var mPassword = ""
     var mDecryptedText = ""
-    private var mError = NetworkError.NoError.ordinal
+    var mError = NetworkError.NoError.ordinal
 
     fun connect(url: String, port: Int, password: String) {
         mPassword = password
