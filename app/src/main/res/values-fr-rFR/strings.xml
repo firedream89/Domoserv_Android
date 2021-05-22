@@ -43,4 +43,5 @@
     <string name="_0_to_30">0 à 30</string>
     <string name="Send">Envoyé</string>
     <string name="action_settings">Configuration</string>
+    <string name="advanced">Avancé</string>
 </resources>

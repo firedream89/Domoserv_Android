@@ -103,6 +103,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_settings -> {
             // launch settings activity
+            val intent = Intent(this, ConfigActivity::class.java)
+            startActivity(intent)
             true
         }
         else -> {
@@ -270,8 +272,16 @@ class MainActivity : AppCompatActivity() {
                 val ip = data.extras?.getString("Ip") ?: String()
                 val port = data.extras?.getString("Port") ?: "0"
                 val password = data.extras?.getString("Password") ?: String()
+                val keySize = data.extras?.getString("keySize")?.toInt() ?: 50
+                val codeSize = data.extras?.getString("codeSize")?.toInt() ?: 4
+                val UTF16 = data.extras?.getBoolean("UTF-16") ?: false
 
-                ws.connect(ip, port.toInt(), password)
+                println(UTF16)
+
+                println(ip)
+                println(port)
+                println(password)
+                ws.connect(ip, port.toInt(), password, keySize, codeSize, UTF16)
 
                 while (ws.isOpen()) {
                     if (ws.isReady()) {

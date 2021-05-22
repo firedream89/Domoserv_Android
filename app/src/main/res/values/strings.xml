@@ -48,4 +48,5 @@
     <string name="setFrostFree" translatable="false">CVOrder|ABS={day}</string>
     <string name="getFrostFree" translatable="false">CVOrder|GetABS</string>
     <string name="action_settings">Settings</string>
+    <string name="advanced">Advanced</string>
 </resources>
